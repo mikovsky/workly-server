@@ -17,3 +17,5 @@ services:
       DATABASE_URL: workly_db
       DATABASE_USER: workly_user
       DATABASE_PASS: workly_pass
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
