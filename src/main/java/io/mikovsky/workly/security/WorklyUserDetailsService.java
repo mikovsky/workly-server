@@ -1,4 +1,4 @@
-package io.mikovsky.workly.services;
+package io.mikovsky.workly.security;
 
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.repositories.UserRepository;
