@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/worklydb?sslmode=disable
+    username: workly_user
+    password: workly_pass
