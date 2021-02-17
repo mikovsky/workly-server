@@ -14,7 +14,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      DATABASE_URL: workly_db
+      DATABASE_URL: jdbc:postgresql://database/workly_db?sslmode=disable
       DATABASE_USER: workly_user
       DATABASE_PASS: workly_pass
     volumes:
