@@ -1,6 +1,5 @@
 package io.mikovsky.workly.security;
 
-import io.mikovsky.workly.services.WorklyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

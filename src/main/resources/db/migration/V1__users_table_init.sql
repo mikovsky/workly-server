@@ -1,4 +1,4 @@
-CREATE TABLE "users"
+CREATE TABLE users
 (
     id         BIGSERIAL PRIMARY KEY,
     email      TEXT                     NOT NULL UNIQUE,

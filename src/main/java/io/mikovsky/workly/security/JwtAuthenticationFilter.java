@@ -1,7 +1,6 @@
 package io.mikovsky.workly.security;
 
 import io.mikovsky.workly.domain.User;
-import io.mikovsky.workly.services.WorklyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
         } catch (Exception e) {
             log.error("could not set user authentication in security context", e);
         }
@@ -60,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String extractJwtTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader(HEADER_STRING);
 
-        if ("".equals(bearerToken) || !bearerToken.startsWith(TOKEN_PREFIX)) {
+        if (bearerToken == null || "".equals(bearerToken) || !bearerToken.startsWith(TOKEN_PREFIX)) {
             return null;
         }
 
