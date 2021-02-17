@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  workly-database:
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: worklydb
+      POSTGRES_USER: workly_user
+      POSTGRES_PASSWORD: workly_pass
