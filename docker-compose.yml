@@ -19,3 +19,5 @@ services:
       DATABASE_PASS: workly_pass
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+    depends_on:
+      - database
