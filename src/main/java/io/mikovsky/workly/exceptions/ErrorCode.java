@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    EMAIL_ALREADY_EXISTS("given email address is already taken"),
     UNAUTHORIZED("request unauthorized"),
     INTERNAL_SERVER_ERROR("something went wrong - please contact Majkelo");
 

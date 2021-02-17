@@ -1,10 +1,15 @@
 package io.mikovsky.workly.services;
 
 import io.mikovsky.workly.domain.User;
+import io.mikovsky.workly.exceptions.ErrorCode;
+import io.mikovsky.workly.exceptions.WorklyException;
 import io.mikovsky.workly.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,12 +19,25 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User save(User newUser) {
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+    public User save(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw WorklyException.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .errorCode(ErrorCode.EMAIL_ALREADY_EXISTS)
+                    .build();
+        }
 
-        // email has to be unique (throw exception)
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return userRepository.save(newUser);
+        return userRepository.save(user);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
 }
