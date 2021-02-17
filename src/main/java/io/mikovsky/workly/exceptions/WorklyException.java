@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+@Getter
 @Builder
 @NoArgsConstructor(force = true)
-@AllArgsConstructor
-@Getter
+@AllArgsConstructor(staticName = "of")
 public class WorklyException extends RuntimeException {
 
     HttpStatus httpStatus;

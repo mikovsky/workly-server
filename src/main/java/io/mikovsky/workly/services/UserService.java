@@ -21,10 +21,7 @@ public class UserService {
 
     public User save(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw WorklyException.builder()
-                    .httpStatus(HttpStatus.BAD_REQUEST)
-                    .errorCode(ErrorCode.EMAIL_ALREADY_EXISTS)
-                    .build();
+            throw WorklyException.of(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

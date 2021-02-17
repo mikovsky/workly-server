@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.security.Principal;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,9 +47,11 @@ public class User implements UserDetails {
     String lastName;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     Instant createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     Instant updatedAt;
 
     @JsonIgnore
@@ -84,6 +88,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static User fromPrincipal(Principal principal) {
+        return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
     }
 
 }
