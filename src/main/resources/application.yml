@@ -4,3 +4,14 @@ spring:
     url: ${DATABASE_URL}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASS}
+
+workly:
+  swagger:
+    contact:
+      name: 'Michał Dudek'
+      url: 'https://instagram.com/_mikovsky_/'
+      email: 'dudek.michal1996@gmail.com'
+    apinfo:
+      title: 'Workly Backend API'
+      description: 'Backend API for Workly application'
+      version: '1.0.0'

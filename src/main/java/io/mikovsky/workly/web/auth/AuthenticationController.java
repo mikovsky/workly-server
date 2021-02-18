@@ -1,13 +1,16 @@
-package io.mikovsky.workly.web;
+package io.mikovsky.workly.web.auth;
 
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.security.JwtTokenProvider;
 import io.mikovsky.workly.services.UserService;
-import io.mikovsky.workly.web.payload.LoginRequest;
-import io.mikovsky.workly.web.payload.LoginSuccessResponse;
-import io.mikovsky.workly.web.payload.RegisterRequest;
+import io.mikovsky.workly.web.auth.payload.LoginRequest;
+import io.mikovsky.workly.web.auth.payload.RegisterRequest;
+import io.mikovsky.workly.web.auth.payload.RegisterResponse;
+import io.mikovsky.workly.web.auth.payload.TokenResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,7 @@ import static io.mikovsky.workly.security.SecurityConstants.TOKEN_PREFIX;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Api(tags = "AuthenticationController")
 public class AuthenticationController {
 
     private final UserService userService;
@@ -33,13 +37,23 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    @ApiOperation(
+            value = "Register new account",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public RegisterResponse register(@Valid @RequestBody RegisterRequest request) {
         User savedUser = userService.save(request.toUser());
-        return ResponseEntity.ok(savedUser);
+        return RegisterResponse.fromUser(savedUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    @ApiOperation(
+            value = "Login & generate JWT Token",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -47,7 +61,7 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new LoginSuccessResponse(true, token));
+        return TokenResponse.of(true, token);
     }
 
 }

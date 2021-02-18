@@ -1,6 +1,7 @@
-package io.mikovsky.workly.web.payload;
+package io.mikovsky.workly.web.auth.payload;
 
-import io.mikovsky.workly.domain.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -14,32 +15,18 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-public class RegisterRequest {
+@ApiModel(value = "LoginRequest")
+public class LoginRequest {
 
     @Email(message = "email needs to be valid")
     @NotBlank(message = "email is required")
     @Size(min = 6, max = 64, message = "email needs to have 6-64 characters")
+    @ApiModelProperty(required = true, position = 1)
     String email;
 
     @NotBlank(message = "password is required")
     @Size(min = 8, max = 64, message = "password needs to have 8-64 characters")
+    @ApiModelProperty(required = true, position = 2)
     String password;
-
-    @NotBlank(message = "firstName is required")
-    @Size(min = 2, max = 64, message = "firstName needs to have 2-64 characters")
-    String firstName;
-
-    @NotBlank(message = "lastName is required")
-    @Size(min = 2, max = 64, message = "lastName needs to have 2-64 characters")
-    String lastName;
-
-    public User toUser() {
-        return User.builder()
-                .email(email)
-                .password(password)
-                .firstName(firstName)
-                .lastName(lastName)
-                .build();
-    }
 
 }
