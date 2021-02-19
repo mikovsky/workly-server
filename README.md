@@ -5,6 +5,7 @@ This is repo with backend code. Frontend repo is here: https://github.com/mtmoty
 
 ### Live preview
 You can see our progress here: https://worklypl.netlify.app/
+
 Backend application is running on AWS as Docker container.
 
 ## Used technologies
