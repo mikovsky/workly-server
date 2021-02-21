@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class WorklyUserDetailsService implements UserDetailsService {
@@ -19,14 +17,12 @@ public class WorklyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userService.findByEmail(email);
-        return optionalUser.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        return userService.findByEmail(email);
     }
 
     @Transactional
     public User loadUserById(Long id) {
-        Optional<User> optionalUser = userService.findById(id);
-        return optionalUser.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        return userService.findById(id);
     }
 
 }

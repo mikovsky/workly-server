@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Service
@@ -29,12 +30,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public @NotNull User findByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+        }
+
+        return user.get();
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public @NotNull User findById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+        }
+
+        return user.get();
     }
 
 }
