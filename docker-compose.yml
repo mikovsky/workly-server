@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: workly_db
       POSTGRES_USER: workly_user
       POSTGRES_PASSWORD: workly_pass
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
 
   backend:
     image: midudek/workly-server:latest
@@ -17,7 +19,7 @@ services:
       DATABASE_URL: jdbc:postgresql://database/workly_db?sslmode=disable
       DATABASE_USER: workly_user
       DATABASE_PASS: workly_pass
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
     depends_on:
       - database
+    volumes:
+      - ./spring_boot:/app
