@@ -1,17 +1,16 @@
 package io.mikovsky.workly.services;
 
 import io.mikovsky.workly.domain.User;
-import io.mikovsky.workly.exceptions.ErrorCode;
 import io.mikovsky.workly.exceptions.WorklyException;
 import io.mikovsky.workly.repositories.UserRepository;
 import io.mikovsky.workly.web.v1.payload.UpdateUserPasswordRequest;
 import io.mikovsky.workly.web.v1.payload.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -34,7 +33,7 @@ public class UserService {
     public User updateUserPassword(UpdateUserPasswordRequest request, User principal) {
         User user = findById(principal.getId());
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw WorklyException.of(HttpStatus.FORBIDDEN, ErrorCode.INCORRECT_CURRENT_PASSWORD);
+            throw WorklyException.incorrectCurrentPassword();
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
@@ -44,7 +43,7 @@ public class UserService {
     public @NotNull User findByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+            throw WorklyException.userNotFound();
         }
 
         return user.get();
@@ -53,7 +52,7 @@ public class UserService {
     public @NotNull User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
-            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+            throw WorklyException.userNotFound();
         }
 
         return user.get();
@@ -61,18 +60,23 @@ public class UserService {
 
     public User save(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw WorklyException.of(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw WorklyException.emailAlreadyExists();
         }
 
+        Instant now = Instant.now();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(now);
+        user.setUpdatedAt(now);
 
         return userRepository.save(user);
     }
 
     public User update(User user) {
         if (!userRepository.existsById(user.getId())) {
-            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+            throw WorklyException.userNotFound();
         }
+
+        user.setUpdatedAt(Instant.now());
 
         return userRepository.save(user);
     }

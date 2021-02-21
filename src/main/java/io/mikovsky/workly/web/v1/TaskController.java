@@ -54,8 +54,7 @@ public class TaskController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, Principal principal) {
-        User user = User.fromPrincipal(principal);
-        Task task = taskService.saveTask(request.toTask(user.getId()));
+        Task task = taskService.saveNewTask(request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(task);
     }
 
@@ -66,22 +65,14 @@ public class TaskController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public TaskResponse updateTask(@PathVariable Long taskId, @Valid @RequestBody UpdateTaskRequest request, Principal principal) {
-        User user = User.fromPrincipal(principal);
-        Task task = taskService.getTaskByIdAndUserId(taskId, user.getId());
-        task.setName(request.getName());
-        task.setDescription(request.getDescription());
-        task.setCompleted(request.getCompleted());
-        task.setDueDate(request.getDueDate());
-        Task updatedTask = taskService.saveTask(task);
+        Task updatedTask = taskService.updateTask(taskId, request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(updatedTask);
     }
 
     @DeleteMapping("/{taskId}")
     @ApiOperation(value = "Delete Task with given ID")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, Principal principal) {
-        User user = User.fromPrincipal(principal);
-        Task task = taskService.getTaskByIdAndUserId(taskId, user.getId());
-        taskService.deleteTaskById(task.getId());
+        taskService.deleteTask(taskId, User.fromPrincipal(principal));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

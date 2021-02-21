@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,11 +47,9 @@ public class User implements UserDetails {
     @Column(name = "job_title")
     String jobTitle;
 
-    @CreationTimestamp
     @Column(name = "created_at")
     Instant createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at")
     Instant updatedAt;
 
