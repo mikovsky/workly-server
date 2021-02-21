@@ -46,6 +46,9 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     String lastName;
 
+    @Column(name = "job_title")
+    String jobTitle;
+
     @CreationTimestamp
     @Column(name = "created_at")
     Instant createdAt;

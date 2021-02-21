@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -31,21 +31,13 @@ public class UserController {
 
     @PutMapping
     public UserResponse updateUser(@Valid @RequestBody UpdateUserRequest request, Principal principal) {
-        User user = User.fromPrincipal(principal);
-        User toUpdate = userService.findById(user.getId());
-        toUpdate.setEmail(request.getEmail());
-        toUpdate.setFirstName(request.getFirstName());
-        toUpdate.setLastName(request.getLastName());
-        User updatedUser = userService.save(toUpdate);
+        User updatedUser = userService.updateUser(request, User.fromPrincipal(principal));
         return UserResponse.fromUser(updatedUser);
     }
 
     @PutMapping("/password")
     public UserResponse updateUserPassword(@Valid @RequestBody UpdateUserPasswordRequest request, Principal principal) {
-        User user = User.fromPrincipal(principal);
-        User toUpdate = userService.findById(user.getId());
-        toUpdate.setPassword(request.getPassword());
-        User updatedUser = userService.save(toUpdate);
+        User updatedUser = userService.updateUserPassword(request, User.fromPrincipal(principal));
         return UserResponse.fromUser(updatedUser);
     }
 

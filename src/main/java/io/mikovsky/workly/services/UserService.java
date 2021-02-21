@@ -4,6 +4,8 @@ import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.exceptions.ErrorCode;
 import io.mikovsky.workly.exceptions.WorklyException;
 import io.mikovsky.workly.repositories.UserRepository;
+import io.mikovsky.workly.web.v1.payload.UpdateUserPasswordRequest;
+import io.mikovsky.workly.web.v1.payload.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,14 +22,23 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User save(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw WorklyException.of(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS);
+    public User updateUser(UpdateUserRequest request, User principal) {
+        User user = findById(principal.getId());
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setJobTitle(request.getJobTitle());
+        return update(user);
+    }
+
+    public User updateUserPassword(UpdateUserPasswordRequest request, User principal) {
+        User user = findById(principal.getId());
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw WorklyException.of(HttpStatus.FORBIDDEN, ErrorCode.INCORRECT_CURRENT_PASSWORD);
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        return update(user);
     }
 
     public @NotNull User findByEmail(String email) {
@@ -46,6 +57,24 @@ public class UserService {
         }
 
         return user.get();
+    }
+
+    public User save(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw WorklyException.of(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+    public User update(User user) {
+        if (!userRepository.existsById(user.getId())) {
+            throw WorklyException.of(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
+        }
+
+        return userRepository.save(user);
     }
 
 }

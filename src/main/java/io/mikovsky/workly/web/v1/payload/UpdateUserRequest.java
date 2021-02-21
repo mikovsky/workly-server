@@ -34,4 +34,8 @@ public class UpdateUserRequest {
     @ApiModelProperty(required = true, position = 4)
     String lastName;
 
+    @Size(max = 64, message = "max jobTitle length is 64 characters")
+    @ApiModelProperty(required = true, position = 5)
+    String jobTitle;
+
 }

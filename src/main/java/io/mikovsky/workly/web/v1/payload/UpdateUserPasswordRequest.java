@@ -17,9 +17,14 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "UpdateUserPasswordRequest")
 public class UpdateUserPasswordRequest {
 
-    @NotBlank(message = "password is required")
-    @Size(min = 8, max = 64, message = "password needs to have 8-64 characters")
+    @NotBlank(message = "currentPassword is required")
+    @Size(min = 8, max = 64, message = "currentPassword needs to have 8-64 characters")
     @ApiModelProperty(required = true, position = 1)
-    String password;
+    String currentPassword;
+
+    @NotBlank(message = "newPassword is required")
+    @Size(min = 8, max = 64, message = "newPassword needs to have 8-64 characters")
+    @ApiModelProperty(required = true, position = 2)
+    String newPassword;
 
 }

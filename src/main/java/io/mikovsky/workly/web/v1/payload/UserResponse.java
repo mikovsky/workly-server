@@ -27,12 +27,16 @@ public class UserResponse {
     @ApiModelProperty(required = true, position = 4)
     String lastName;
 
+    @ApiModelProperty(required = true, position = 5)
+    String jobTitle;
+
     public static UserResponse fromUser(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .jobTitle(user.getJobTitle())
                 .build();
     }
 
