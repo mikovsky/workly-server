@@ -1,12 +1,9 @@
 version: 2.1
-
-machine:
-  environment:
-    GIT_SHA: $(echo $CIRCLE_SHA1 | cut -c -7)
-
 jobs:
   build:
     machine: true
+    environment:
+      GIT_SHA: $(echo $CIRCLE_SHA1 | cut -c -7)
     steps:
       - checkout
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
