@@ -1,4 +1,4 @@
-# About Workly [![Build Status](https://travis-ci.org/mikovsky/workly-server.svg?branch=master)](https://travis-ci.org/mikovsky/workly-server)
+# About Workly
 
 Workly is a project created by me and my frontend developer friend. It's a project management app like Asana or Trello.
 This is repo with backend code. Frontend repo is here: https://github.com/mtmotyka/workly-client
