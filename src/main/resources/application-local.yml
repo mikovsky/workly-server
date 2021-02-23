@@ -8,3 +8,4 @@ spring:
 workly:
   security:
     secret: 'SecretForJWT'
+    expiration-time: 1800000

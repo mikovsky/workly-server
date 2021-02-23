@@ -7,10 +7,10 @@ spring:
 
 workly:
   security:
-    secret: ${SECURITY_SECRET}
-    tokenPrefix: 'Bearer '
-    headerString: 'Authorization'
-    expirationTime: 900000
+    secret: ${JWT_SECRET}
+    header-string: 'Authorization'
+    token-prefix: 'Bearer '
+    expiration-time: ${JWT_EXP_TIME}
   swagger:
     contact:
       name: 'Michał Dudek'
