@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.Instant;
@@ -31,7 +32,7 @@ public class UpdateTaskRequest {
     @ApiModelProperty(required = false, position = 3)
     Boolean completed;
 
-    @Future(message = "dueDate must be a future date")
+    @FutureOrPresent(message = "dueDate must be a future date")
     @ApiModelProperty(required = false, position = 4)
     Instant dueDate;
 
