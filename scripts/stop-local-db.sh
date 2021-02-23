@@ -1,1 +1,1 @@
-docker stop workly_local_db
+docker stop workly-local-db

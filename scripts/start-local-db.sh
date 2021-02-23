@@ -1,1 +1,1 @@
-docker start workly_local_db
+docker start workly-local-db
