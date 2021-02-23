@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Value
 @Builder
@@ -30,7 +31,7 @@ public class TaskResponse {
     Boolean completed;
 
     @ApiModelProperty(required = false, position = 5)
-    Instant dueDate;
+    LocalDate dueDate;
 
     @ApiModelProperty(required = true, position = 6)
     Instant createdAt;

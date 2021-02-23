@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -38,7 +39,7 @@ public class Task {
     Boolean completed;
 
     @Column(name = "due_date")
-    Instant dueDate;
+    LocalDate dueDate;
 
     @Column(name = "created_at")
     Instant createdAt;
