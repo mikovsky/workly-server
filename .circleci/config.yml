@@ -9,3 +9,12 @@ jobs:
       - run: |
           docker push $DOCKER_USER/$DOCKER_IMAGE:$CIRCLE_SHA1
           docker push $DOCKER_USER/$DOCKER_IMAGE:latest
+
+workflows:
+  version: 2
+  build-and-push-image:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master

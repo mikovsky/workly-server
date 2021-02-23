@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 
-import static io.mikovsky.workly.security.SecurityConstants.HEADER_STRING;
-import static io.mikovsky.workly.security.SecurityConstants.TOKEN_PREFIX;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -27,6 +24,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
 
     private final WorklyUserDetailsService worklyUserDetailsService;
+
+    private final SecurityProperties properties;
 
     @Override
     protected void doFilterInternal(
@@ -56,13 +55,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractJwtTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HEADER_STRING);
+        String bearerToken = request.getHeader(properties.getHeaderString());
 
-        if (bearerToken == null || "".equals(bearerToken) || !bearerToken.startsWith(TOKEN_PREFIX)) {
+        if (bearerToken == null || "".equals(bearerToken) || !bearerToken.startsWith(properties.getTokenPrefix())) {
             return null;
         }
 
-        return bearerToken.replace(TOKEN_PREFIX, "");
+        return bearerToken.replace(properties.getTokenPrefix(), "");
     }
 
 }

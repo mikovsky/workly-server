@@ -6,6 +6,11 @@ spring:
     password: ${DATABASE_PASS}
 
 workly:
+  security:
+    secret: ${SECURITY_SECRET}
+    tokenPrefix: 'Bearer '
+    headerString: 'Authorization'
+    expirationTime: 900000
   swagger:
     contact:
       name: 'Michał Dudek'

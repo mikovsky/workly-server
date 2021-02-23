@@ -2,6 +2,7 @@ package io.mikovsky.workly.web.auth;
 
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.security.JwtTokenProvider;
+import io.mikovsky.workly.security.SecurityProperties;
 import io.mikovsky.workly.services.UserService;
 import io.mikovsky.workly.web.auth.payload.LoginRequest;
 import io.mikovsky.workly.web.auth.payload.RegisterRequest;
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static io.mikovsky.workly.security.SecurityConstants.TOKEN_PREFIX;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -35,6 +34,8 @@ public class AuthenticationController {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final AuthenticationManager authenticationManager;
+
+    private final SecurityProperties properties;
 
     @PostMapping("/register")
     @ApiOperation(
@@ -59,7 +60,7 @@ public class AuthenticationController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
+        String token = properties.getTokenPrefix() + jwtTokenProvider.generateToken(authentication);
 
         return TokenResponse.of(true, token);
     }

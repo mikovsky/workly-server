@@ -8,11 +8,10 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Value
 @Builder
@@ -35,7 +34,7 @@ public class CreateTaskRequest {
 
     @FutureOrPresent(message = "dueDate must be a future date")
     @ApiModelProperty(required = false, position = 4)
-    Instant dueDate;
+    LocalDate dueDate;
 
     public Task toTask(Long userId) {
         return Task.builder()
