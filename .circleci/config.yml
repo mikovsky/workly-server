@@ -1,10 +1,10 @@
 version: 2.1
+general:
+  branches:
+    only:
+      - master
 jobs:
   build:
-    general:
-      branches:
-        only:
-          - master
     machine: true
     steps:
       - checkout
