@@ -4,14 +4,3 @@ spring:
     url: jdbc:postgresql://localhost:5432/workly_db?sslmode=disable
     username: workly_user
     password: workly_pass
-
-workly:
-  swagger:
-    contact:
-      name: 'Michał Dudek'
-      url: 'https://instagram.com/_mikovsky_/'
-      email: 'dudek.michal1996@gmail.com'
-    apinfo:
-      title: 'Workly Backend API'
-      description: 'Backend API for Workly application'
-      version: '1.0.0'
