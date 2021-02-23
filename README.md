@@ -12,7 +12,7 @@ Backend application is running on AWS as Docker container.
 
 **Frontend:**
 - React.js
-- Tailwind CSS (first approach with this framework... Let's try) **Currently refactoring app for Tailwind because I started without this.**
+- Tailwind CSS
 
 **Backend:**
 - Spring Boot
