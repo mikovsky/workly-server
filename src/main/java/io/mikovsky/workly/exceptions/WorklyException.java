@@ -24,6 +24,10 @@ public class WorklyException extends RuntimeException {
                 .build();
     }
 
+    public static WorklyException projectNotFound() {
+        return new WorklyException(HttpStatus.NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND.getMessage());
+    }
+
     public static WorklyException emailAlreadyExists() {
         return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS, ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
     }
@@ -46,6 +50,10 @@ public class WorklyException extends RuntimeException {
 
     public static WorklyException unauthorized() {
         return new WorklyException(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.getMessage());
+    }
+
+    public static WorklyException forbidden() {
+        return new WorklyException(HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, ErrorCode.FORBIDDEN.getMessage());
     }
 
     public static WorklyException internalServerError(String message) {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,6 +57,10 @@ public class UserService {
         }
 
         return user.get();
+    }
+
+    public List<User> findAllWhereIdIn(List<Long> ids) {
+        return userRepository.findAllByIdIn(ids);
     }
 
     public User save(User user) {
