@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Specification
 
+import java.time.LocalDate
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -22,6 +24,15 @@ class IntegrationTest extends Specification {
     static final String DEFAULT_PASSWORD = "kla3tkf04md1335fa"
     static final String DEFAULT_FIRST_NAME = "John"
     static final String DEFAULT_LAST_NAME = "Doe"
+
+    static final String ANOTHER_EMAIL = "test2@email.com"
+    static final String ANOTHER_PASSWORD = "qweasdzxc123dhg"
+    static final String ANOTHER_FIRST_NAME = "Louis"
+    static final String ANOTHER_LAST_NAME = "Villain"
+
+    static final String DEFAULT_TASK_NAME = "Default Task"
+    static final String DEFAULT_TASK_DESCRIPTION = "Default Task Description"
+    static final String DEFAULT_TASK_DUE_DATE = LocalDate.now().toString()
 
     @Autowired
     protected MockMvc mvc
@@ -47,6 +58,14 @@ class IntegrationTest extends Specification {
 
     protected String getDefaultUserToken() {
         return login(DEFAULT_EMAIL, DEFAULT_PASSWORD)
+    }
+
+    protected long registerAnotherUser() {
+        return registerUser(ANOTHER_EMAIL, ANOTHER_FIRST_NAME, ANOTHER_LAST_NAME, ANOTHER_PASSWORD)
+    }
+
+    protected String getAnotherUserToken() {
+        return login(ANOTHER_EMAIL, ANOTHER_PASSWORD)
     }
 
     protected long registerUser(String email, String firstName, String lastName, String password) {
@@ -86,6 +105,30 @@ class IntegrationTest extends Specification {
         def body = new JsonSlurper().parseText(response.contentAsString)
 
         return body.token
+    }
+
+    protected long storeTask(String token,
+                             String name = DEFAULT_TASK_NAME,
+                             String description = DEFAULT_TASK_DESCRIPTION,
+                             String dueDate = DEFAULT_TASK_DUE_DATE) {
+        def json = """
+        {
+            "name": "${name}",
+            "description": "${description}",
+            "dueDate": "${dueDate}"
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/tasks")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        def response = mvc.perform(request).andReturn().response
+
+        def body = new JsonSlurper().parseText(response.contentAsString)
+
+        return body.id
     }
 
 }
