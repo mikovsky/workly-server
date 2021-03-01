@@ -1,4 +1,4 @@
-package io.mikovsky.workly.web.v1;
+package io.mikovsky.workly.web.v1.tasks;
 
 import io.mikovsky.workly.domain.Task;
 import io.mikovsky.workly.domain.User;

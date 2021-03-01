@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/workly_db?sslmode=disable
+    username: workly_user
+    password: workly_pass
+
+workly:
+  security:
+    secret: 'SecretForJWT'
+    expiration-time: 1800000

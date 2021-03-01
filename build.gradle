@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.4.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'groovy'
 }
 
 group = 'io.mikovsky.workly'
@@ -28,6 +29,10 @@ dependencies {
 
     implementation 'com.auth0:java-jwt:3.13.0'
 
+    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'one.util:streamex:0.7.3'
+
     implementation 'org.flywaydb:flyway-core'
     runtimeOnly 'org.postgresql:postgresql'
 
@@ -35,6 +40,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+    testImplementation 'org.codehaus.groovy:groovy:3.0.7'
+    testImplementation 'org.codehaus.groovy:groovy-json:3.0.7'
+    testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
+    testImplementation 'org.spockframework:spock-spring:2.0-M4-groovy-3.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

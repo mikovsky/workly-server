@@ -23,6 +23,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User updateUser(UpdateUserRequest request, User principal) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw WorklyException.emailAlreadyExists();
+        }
+
         User user = findById(principal.getId());
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());

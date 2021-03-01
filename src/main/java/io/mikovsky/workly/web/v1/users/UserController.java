@@ -1,4 +1,4 @@
-package io.mikovsky.workly.web.v1;
+package io.mikovsky.workly.web.v1.users;
 
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.services.UserService;
@@ -28,32 +28,21 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    @ApiOperation(
-            value = "Get information about user with provided ID",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Get information about user with provided ID", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResponse getUser(@PathVariable Long userId) {
         User user = userService.findById(userId);
         return UserResponse.fromUser(user);
     }
 
     @PutMapping
-    @ApiOperation(
-            value = "Update user information",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Update user information", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResponse updateUser(@Valid @RequestBody UpdateUserRequest request, Principal principal) {
         User updatedUser = userService.updateUser(request, User.fromPrincipal(principal));
         return UserResponse.fromUser(updatedUser);
     }
 
     @PutMapping("/password")
-    @ApiOperation(
-            value = "Update user password",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Update user password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResponse updateUserPassword(@Valid @RequestBody UpdateUserPasswordRequest request, Principal principal) {
         User updatedUser = userService.updateUserPassword(request, User.fromPrincipal(principal));
         return UserResponse.fromUser(updatedUser);
