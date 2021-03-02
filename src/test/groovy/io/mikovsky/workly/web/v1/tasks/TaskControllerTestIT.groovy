@@ -1,6 +1,5 @@
 package io.mikovsky.workly.web.v1.tasks
 
-import groovy.json.JsonSlurper
 import io.mikovsky.workly.IntegrationTest
 import io.mikovsky.workly.exceptions.ErrorCode
 import org.springframework.http.HttpStatus
@@ -30,7 +29,7 @@ class TaskControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
         body.size() == 1
         body[0].id == defaultTaskId1
         body[0].name == "Task 1"
@@ -69,7 +68,7 @@ class TaskControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
         body.id != null
         body.name == taskName
         body.description == taskDescription
@@ -78,6 +77,35 @@ class TaskControllerTestIT extends IntegrationTest {
         body.createdAt != null
         body.updatedAt != null
         body.createdAt == body.updatedAt
+    }
+
+    def "should return error on create new task because task with given name already exists for this user"() {
+        given:
+        def defaultId = registerDefaultUser()
+        def defaultToken = getDefaultUserToken()
+        def defaultTaskId1 = storeTask(defaultToken, "Task 1")
+
+        when:
+        def json = """
+        {
+            "name": "Task 1",
+            "description": "Some description",
+            "dueDate": "${LocalDate.now().plusDays(2).toString()}"
+        }
+        """
+        def request = MockMvcRequestBuilders.post("/api/tasks")
+                .header("Authorization", defaultToken)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.BAD_REQUEST.value()
+
+        def body = parseBody(response)
+        body.errorCode == ErrorCode.TASK_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
     def "should return error on create new task because of invalid payload"() {
@@ -138,7 +166,7 @@ class TaskControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
         body.id == taskId
         body.name == newTaskName
         body.description == newTaskDescription
@@ -149,7 +177,7 @@ class TaskControllerTestIT extends IntegrationTest {
         body.createdAt != body.updatedAt
     }
 
-    def "should return error on task update because of invalid task ID"() {
+    def "should return error on task update because task with given ID does not exists for this user"() {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
@@ -173,9 +201,38 @@ class TaskControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.NOT_FOUND.value()
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
         body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()
         body.errorMessage == ErrorCode.TASK_NOT_FOUND.getMessage()
+    }
+
+    def "should return error on task update because task with given name already exists for this user"() {
+        given:
+        def defaultId = registerDefaultUser()
+        def defaultToken = getDefaultUserToken()
+        def defaultTaskId1 = storeTask(defaultToken, "Task 1")
+
+        when:
+        def json = """
+        {
+            "name": "Task 1",
+            "description": "Some description",
+            "dueDate": "${LocalDate.now().plusDays(2).toString()}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/tasks/${defaultTaskId1}")
+                .header("Authorization", defaultToken)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.BAD_REQUEST.value()
+
+        def body = parseBody(response)
+        body.errorCode == ErrorCode.TASK_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
     def "should return error on task update because of invalid payload"() {
@@ -226,7 +283,7 @@ class TaskControllerTestIT extends IntegrationTest {
         response.contentAsString == ""
     }
 
-    def "should return error on task delete because of invalid task ID"() {
+    def "should return error on task delete because task with given ID does not exists for this user"() {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
@@ -241,7 +298,7 @@ class TaskControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.NOT_FOUND.value()
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
         body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()
         body.errorMessage == ErrorCode.TASK_NOT_FOUND.getMessage()
     }
