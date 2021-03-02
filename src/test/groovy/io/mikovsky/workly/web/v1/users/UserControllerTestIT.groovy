@@ -48,7 +48,7 @@ class UserControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.OK.value()
 
         def body = parseBody(response)
-        body.id == id
+        body.id == defaultId
         body.email == DEFAULT_EMAIL
         body.firstName == DEFAULT_FIRST_NAME
         body.lastName == DEFAULT_LAST_NAME
