@@ -6,6 +6,7 @@ import io.mikovsky.workly.exceptions.WorklyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import spock.lang.Unroll
 
 class ProjectControllerTestIT extends IntegrationTest {
 
@@ -69,6 +70,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         body.createdAt == body.updatedAt
     }
 
+    @Unroll
     def "should return error on project create because of invalid payload"() {
         given:
         def id = registerDefaultUser()
@@ -185,6 +187,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
+    @Unroll
     def "should return error on project update because of invalid payload"() {
         given:
         def id = registerDefaultUser()
@@ -476,6 +479,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         body.errorMessage == ErrorCode.USER_NOT_FOUND.getMessage()
     }
 
+    @Unroll
     def "should return error on add member to the project because of invalid payload"() {
         given:
         def defaultId = registerDefaultUser()
