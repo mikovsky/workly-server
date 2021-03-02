@@ -1,4 +1,4 @@
-package io.mikovsky.workly.web.v1.payload;
+package io.mikovsky.workly.web.v1.tasks.payload;
 
 import io.mikovsky.workly.domain.Task;
 import io.swagger.annotations.ApiModel;

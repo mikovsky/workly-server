@@ -1,4 +1,4 @@
-package io.mikovsky.workly.web.v1.payload;
+package io.mikovsky.workly.web.v1.users.payload;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

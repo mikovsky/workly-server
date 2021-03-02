@@ -2,9 +2,9 @@ package io.mikovsky.workly.web.v1.users;
 
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.services.UserService;
-import io.mikovsky.workly.web.v1.payload.UpdateUserPasswordRequest;
-import io.mikovsky.workly.web.v1.payload.UpdateUserRequest;
-import io.mikovsky.workly.web.v1.payload.UserResponse;
+import io.mikovsky.workly.web.v1.users.payload.UpdateUserPasswordRequest;
+import io.mikovsky.workly.web.v1.users.payload.UpdateUserRequest;
+import io.mikovsky.workly.web.v1.users.payload.UserResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
