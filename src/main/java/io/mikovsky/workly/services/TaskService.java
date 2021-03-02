@@ -4,8 +4,8 @@ import io.mikovsky.workly.domain.Task;
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.exceptions.WorklyException;
 import io.mikovsky.workly.repositories.TaskRepository;
-import io.mikovsky.workly.web.v1.payload.CreateTaskRequest;
-import io.mikovsky.workly.web.v1.payload.UpdateTaskRequest;
+import io.mikovsky.workly.web.v1.tasks.payload.CreateTaskRequest;
+import io.mikovsky.workly.web.v1.tasks.payload.UpdateTaskRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

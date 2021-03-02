@@ -3,8 +3,8 @@ package io.mikovsky.workly.services;
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.exceptions.WorklyException;
 import io.mikovsky.workly.repositories.UserRepository;
-import io.mikovsky.workly.web.v1.payload.UpdateUserPasswordRequest;
-import io.mikovsky.workly.web.v1.payload.UpdateUserRequest;
+import io.mikovsky.workly.web.v1.users.payload.UpdateUserPasswordRequest;
+import io.mikovsky.workly.web.v1.users.payload.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User updateUser(UpdateUserRequest request, User principal) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw WorklyException.emailAlreadyExists();
+        }
+
         User user = findById(principal.getId());
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());

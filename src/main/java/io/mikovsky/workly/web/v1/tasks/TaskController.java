@@ -1,11 +1,11 @@
-package io.mikovsky.workly.web.v1;
+package io.mikovsky.workly.web.v1.tasks;
 
 import io.mikovsky.workly.domain.Task;
 import io.mikovsky.workly.domain.User;
 import io.mikovsky.workly.services.TaskService;
-import io.mikovsky.workly.web.v1.payload.CreateTaskRequest;
-import io.mikovsky.workly.web.v1.payload.TaskResponse;
-import io.mikovsky.workly.web.v1.payload.UpdateTaskRequest;
+import io.mikovsky.workly.web.v1.tasks.payload.CreateTaskRequest;
+import io.mikovsky.workly.web.v1.tasks.payload.TaskResponse;
+import io.mikovsky.workly.web.v1.tasks.payload.UpdateTaskRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +29,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-@Api(tags = "TaskController")
+@Api(tags = "Tasks")
 public class TaskController {
 
     private final TaskService taskService;
 
     @GetMapping
-    @ApiOperation(
-            value = "Get all Tasks for currently logged user",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Get all Tasks for currently logged user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskResponse> getTasks(Principal principal) {
         User user = User.fromPrincipal(principal);
         return taskService.getTasksByUserId(user.getId())
@@ -48,22 +45,14 @@ public class TaskController {
     }
 
     @PostMapping
-    @ApiOperation(
-            value = "Create new Task",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Create new Task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, Principal principal) {
         Task task = taskService.saveNewTask(request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(task);
     }
 
     @PutMapping("/{taskId}")
-    @ApiOperation(
-            value = "Update Task with given ID",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @ApiOperation(value = "Update Task with given ID", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskResponse updateTask(@PathVariable Long taskId, @Valid @RequestBody UpdateTaskRequest request, Principal principal) {
         Task updatedTask = taskService.updateTask(taskId, request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(updatedTask);
