@@ -9,6 +9,7 @@ import io.mikovsky.workly.web.v1.tasks.payload.UpdateTaskRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import one.util.streamex.StreamEx;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -38,10 +38,9 @@ public class TaskController {
     @ApiOperation(value = "Get all Tasks for currently logged user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskResponse> getTasks(Principal principal) {
         User user = User.fromPrincipal(principal);
-        return taskService.getTasksByUserId(user.getId())
-                .stream()
+        return StreamEx.of(taskService.getTasksByUserId(user.getId()))
                 .map(TaskResponse::fromTask)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping
