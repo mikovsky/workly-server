@@ -1,6 +1,5 @@
 package io.mikovsky.workly.web.v1.users
 
-import groovy.json.JsonSlurper
 import io.mikovsky.workly.IntegrationTest
 import io.mikovsky.workly.exceptions.ErrorCode
 import org.springframework.http.HttpStatus
@@ -10,7 +9,7 @@ import spock.lang.Unroll
 
 class UserControllerTestIT extends IntegrationTest {
 
-    def "should get information about user by userID"() {
+    def "should get information about same user"() {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
@@ -24,12 +23,36 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def responseBody = new JsonSlurper().parseText(response.contentAsString)
-        responseBody.id == id
-        responseBody.email == DEFAULT_EMAIL
-        responseBody.firstName == DEFAULT_FIRST_NAME
-        responseBody.lastName == DEFAULT_LAST_NAME
-        responseBody.jobTitle == null
+        def body = parseBody(response)
+        body.id == id
+        body.email == DEFAULT_EMAIL
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == null
+    }
+
+    def "should get information about other user"() {
+        given:
+        def defaultId = registerDefaultUser()
+
+        def anotherId = registerAnotherUser()
+        def anotherToken = getAnotherUserToken()
+
+        when:
+        def request = MockMvcRequestBuilders.get("/api/users/${defaultId}")
+                .header("Authorization", anotherToken)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == defaultId
+        body.email == DEFAULT_EMAIL
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == null
     }
 
     def "should update user information"() {
@@ -60,16 +83,16 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def responseBody = new JsonSlurper().parseText(response.contentAsString)
-        responseBody.id == id
-        responseBody.email != DEFAULT_EMAIL
-        responseBody.firstName != DEFAULT_FIRST_NAME
-        responseBody.lastName != DEFAULT_LAST_NAME
-        responseBody.jobTitle != null
-        responseBody.email == newEmail
-        responseBody.firstName == newFirstName
-        responseBody.lastName == newLastName
-        responseBody.jobTitle == newJobTitle
+        def body = parseBody(response)
+        body.id == id
+        body.email != DEFAULT_EMAIL
+        body.firstName != DEFAULT_FIRST_NAME
+        body.lastName != DEFAULT_LAST_NAME
+        body.jobTitle != null
+        body.email == newEmail
+        body.firstName == newFirstName
+        body.lastName == newLastName
+        body.jobTitle == newJobTitle
     }
 
     def "should return error on update user information when email already exists"() {
@@ -101,9 +124,9 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.BAD_REQUEST.value()
 
-        def responseBody = new JsonSlurper().parseText(response.contentAsString)
-        responseBody.errorCode == ErrorCode.EMAIL_ALREADY_EXISTS.toString()
-        responseBody.errorMessage == ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()
+        def body = parseBody(response)
+        body.errorCode == ErrorCode.EMAIL_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()
     }
 
     @Unroll
@@ -164,12 +187,12 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def responseBody = new JsonSlurper().parseText(response.contentAsString)
-        responseBody.id == id
-        responseBody.email == DEFAULT_EMAIL
-        responseBody.firstName == DEFAULT_FIRST_NAME
-        responseBody.lastName == DEFAULT_LAST_NAME
-        responseBody.jobTitle == null
+        def body = parseBody(response)
+        body.id == id
+        body.email == DEFAULT_EMAIL
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == null
 
         when:
         json = """
@@ -188,9 +211,9 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.UNAUTHORIZED.value()
 
-        def responseBody2 = new JsonSlurper().parseText(response.contentAsString)
-        responseBody2.errorCode == ErrorCode.UNAUTHORIZED.toString()
-        responseBody2.errorMessage == ErrorCode.UNAUTHORIZED.getMessage()
+        def body2 = parseBody(response)
+        body2.errorCode == ErrorCode.UNAUTHORIZED.toString()
+        body2.errorMessage == ErrorCode.UNAUTHORIZED.getMessage()
 
         when:
         json = """
@@ -209,11 +232,11 @@ class UserControllerTestIT extends IntegrationTest {
         response != null
         response.status == HttpStatus.OK.value()
 
-        def responseBody3 = new JsonSlurper().parseText(response.contentAsString)
-        responseBody3.success == true
-        responseBody3.token != null
-        responseBody3.token != ""
-        responseBody3.token.contains("Bearer ")
+        def body3 = parseBody(response)
+        body3.success == true
+        body3.token != null
+        body3.token != ""
+        body3.token.contains("Bearer ")
     }
 
     @Unroll

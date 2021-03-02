@@ -5,6 +5,7 @@ import io.mikovsky.workly.exceptions.ErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import spock.lang.Unroll
 
 import java.time.LocalDate
 
@@ -108,6 +109,7 @@ class TaskControllerTestIT extends IntegrationTest {
         body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
+    @Unroll
     def "should return error on create new task because of invalid payload"() {
         given:
         def id = registerDefaultUser()
@@ -235,6 +237,7 @@ class TaskControllerTestIT extends IntegrationTest {
         body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
+    @Unroll
     def "should return error on task update because of invalid payload"() {
         given:
         def id = registerDefaultUser()
