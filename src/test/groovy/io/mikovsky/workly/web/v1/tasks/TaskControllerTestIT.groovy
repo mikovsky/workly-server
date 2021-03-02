@@ -3,6 +3,7 @@ package io.mikovsky.workly.web.v1.tasks
 import groovy.json.JsonSlurper
 import io.mikovsky.workly.IntegrationTest
 import io.mikovsky.workly.exceptions.ErrorCode
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
@@ -27,7 +28,7 @@ class TaskControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def body = new JsonSlurper().parseText(response.contentAsString)
         body.size() == 1
@@ -66,7 +67,7 @@ class TaskControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def body = new JsonSlurper().parseText(response.contentAsString)
         body.id != null
@@ -98,7 +99,7 @@ class TaskControllerTestIT extends IntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         def response = mvc.perform(request).andReturn().response
         response != null
-        response.status == 400
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
         taskName         | taskDescription     | taskDueDate
@@ -135,7 +136,7 @@ class TaskControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def body = new JsonSlurper().parseText(response.contentAsString)
         body.id == taskId
@@ -162,7 +163,7 @@ class TaskControllerTestIT extends IntegrationTest {
             "completed": true
         }
         """
-        def request = MockMvcRequestBuilders.put("/api/tasks/${123123123123}")
+        def request = MockMvcRequestBuilders.put("/api/tasks/123123123123")
                 .header("Authorization", token)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -170,7 +171,75 @@ class TaskControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 404
+        response.status == HttpStatus.NOT_FOUND.value()
+
+        def body = new JsonSlurper().parseText(response.contentAsString)
+        body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.TASK_NOT_FOUND.getMessage()
+    }
+
+    def "should return error on task update because of invalid payload"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        expect:
+        def json = """
+        {
+            "name": ${taskName},
+            "description": "Valid Description",
+            "dueDate": ${dueDate},
+            "completed": true
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/tasks/${taskId}")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+        response != null
+        response.status == HttpStatus.BAD_REQUEST.value()
+
+        where:
+        taskName         | dueDate
+        null             | "\"${LocalDate.now().plusDays(1).toString()}\""
+        "\"\""           | "\"${LocalDate.now().plusDays(1).toString()}\""
+        "\"A\""          | "\"${LocalDate.now().plusDays(1).toString()}\""
+        "\"Valid Name\"" | "\"${LocalDate.now().minusDays(1).toString()}\""
+    }
+
+    def "should delete task for user"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        when:
+        def request = MockMvcRequestBuilders.delete("/api/tasks/${taskId}")
+                .header("Authorization", token)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.NO_CONTENT.value()
+        response.contentAsString == ""
+    }
+
+    def "should return error on task delete because of invalid task ID"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        when:
+        def request = MockMvcRequestBuilders.delete("/api/tasks/123123123123")
+                .header("Authorization", token)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.NOT_FOUND.value()
 
         def body = new JsonSlurper().parseText(response.contentAsString)
         body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()

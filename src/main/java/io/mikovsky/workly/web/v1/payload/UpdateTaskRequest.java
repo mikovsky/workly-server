@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @ApiModel(value = "UpdateTaskRequest")
 public class UpdateTaskRequest {
 
-    @NotBlank(message = "task name is required")
+    @NotNull(message = "task name cannot be null")
     @Size(min = 2, max = 64, message = "task name needs to have 2-64 characters")
     @ApiModelProperty(required = true, position = 1)
     String name;
