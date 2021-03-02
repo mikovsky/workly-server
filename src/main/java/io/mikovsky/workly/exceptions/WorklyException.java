@@ -3,6 +3,8 @@ package io.mikovsky.workly.exceptions;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.util.UUID;
+
 @Getter
 public class WorklyException extends RuntimeException {
 
@@ -16,11 +18,11 @@ public class WorklyException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    public ErrorResponse toErrorResponse() {
+    public ErrorResponse toErrorResponse(UUID requestUUID) {
         return ErrorResponse.builder()
                 .errorCode(errorCode)
                 .errorMessage(errorCode.getMessage())
-                .details(getMessage())
+                .requestUUID(requestUUID)
                 .build();
     }
 

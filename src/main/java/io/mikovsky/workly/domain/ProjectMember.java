@@ -30,4 +30,11 @@ public class ProjectMember {
     @Column(name = "user_id")
     Long userId;
 
+    public static ProjectMember of(Long projectId, Long userId) {
+        return ProjectMember.builder()
+                .projectId(projectId)
+                .userId(userId)
+                .build();
+    }
+
 }

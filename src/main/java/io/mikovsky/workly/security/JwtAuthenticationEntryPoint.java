@@ -3,6 +3,7 @@ package io.mikovsky.workly.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mikovsky.workly.exceptions.ErrorResponse;
 import io.mikovsky.workly.exceptions.WorklyException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -13,7 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
+@Slf4j
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -23,7 +26,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-        ErrorResponse errorResponse = WorklyException.unauthorized().toErrorResponse();
+        UUID requestUUID = UUID.randomUUID();
+        log.error("RequestID: {}, Error Message: {}", requestUUID, "Unauthorized");
+        ErrorResponse errorResponse = WorklyException.unauthorized().toErrorResponse(requestUUID);
         String json = new ObjectMapper().writeValueAsString(errorResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

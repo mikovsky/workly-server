@@ -37,4 +37,11 @@ public class Project {
     @Column(name = "updated_at")
     Instant updatedAt;
 
+    public static Project of(Long userId, String name) {
+        return Project.builder()
+                .userId(userId)
+                .name(name)
+                .build();
+    }
+
 }
