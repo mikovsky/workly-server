@@ -3,6 +3,7 @@ package io.mikovsky.workly.web.v1.users
 import groovy.json.JsonSlurper
 import io.mikovsky.workly.IntegrationTest
 import io.mikovsky.workly.exceptions.ErrorCode
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Unroll
@@ -21,7 +22,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def responseBody = new JsonSlurper().parseText(response.contentAsString)
         responseBody.id == id
@@ -57,7 +58,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def responseBody = new JsonSlurper().parseText(response.contentAsString)
         responseBody.id == id
@@ -98,7 +99,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 400
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         def responseBody = new JsonSlurper().parseText(response.contentAsString)
         responseBody.errorCode == ErrorCode.EMAIL_ALREADY_EXISTS.toString()
@@ -125,7 +126,7 @@ class UserControllerTestIT extends IntegrationTest {
                 .content(json)
         def response = mvc.perform(request).andReturn().response
         response != null
-        response.status == 400
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
         email                  | firstName    | lastName
@@ -161,7 +162,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def responseBody = new JsonSlurper().parseText(response.contentAsString)
         responseBody.id == id
@@ -185,7 +186,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 401
+        response.status == HttpStatus.UNAUTHORIZED.value()
 
         def responseBody2 = new JsonSlurper().parseText(response.contentAsString)
         responseBody2.errorCode == ErrorCode.UNAUTHORIZED.toString()
@@ -206,7 +207,7 @@ class UserControllerTestIT extends IntegrationTest {
 
         then:
         response != null
-        response.status == 200
+        response.status == HttpStatus.OK.value()
 
         def responseBody3 = new JsonSlurper().parseText(response.contentAsString)
         responseBody3.success == true
@@ -234,7 +235,7 @@ class UserControllerTestIT extends IntegrationTest {
                 .content(json)
         def response = mvc.perform(request).andReturn().response
         response != null
-        response.status == 400
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
         currentPassword           | newPassword
