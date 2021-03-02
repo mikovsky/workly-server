@@ -22,7 +22,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Api(tags = "UserController")
+@Api(tags = "Users")
 public class UserController {
 
     private final UserService userService;
