@@ -1,6 +1,7 @@
 package io.mikovsky.workly
 
 import groovy.json.JsonSlurper
+import io.mikovsky.workly.repositories.ProjectMemberRepository
 import io.mikovsky.workly.repositories.ProjectRepository
 import io.mikovsky.workly.repositories.TaskRepository
 import io.mikovsky.workly.repositories.UserRepository
@@ -34,6 +35,8 @@ class IntegrationTest extends Specification {
     static final String DEFAULT_TASK_DESCRIPTION = "Default Task Description"
     static final String DEFAULT_TASK_DUE_DATE = LocalDate.now().toString()
 
+    static final String DEFAULT_PROJECT_NAME = "Default Project"
+
     @Autowired
     protected MockMvc mvc
 
@@ -46,10 +49,18 @@ class IntegrationTest extends Specification {
     @Autowired
     protected ProjectRepository projectRepository
 
+    @Autowired
+    protected ProjectMemberRepository projectMemberRepository;
+
     void setup() {
+        projectMemberRepository.deleteAll()
         projectRepository.deleteAll()
         taskRepository.deleteAll()
         userRepository.deleteAll()
+    }
+
+    static def parseBody(response) {
+        return new JsonSlurper().parseText(response.contentAsString)
     }
 
     protected long registerDefaultUser() {
@@ -129,6 +140,43 @@ class IntegrationTest extends Specification {
         def body = new JsonSlurper().parseText(response.contentAsString)
 
         return body.id
+    }
+
+    protected long storeProject(String token,
+                                String name = DEFAULT_PROJECT_NAME) {
+        def json = """
+        {
+            "name": "${name}"
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/projects")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        def response = mvc.perform(request).andReturn().response
+
+        def body = new JsonSlurper().parseText(response.contentAsString)
+
+        return body.id
+    }
+
+    protected void addMemberToProject(String token,
+                                      Long projectId,
+                                      Long userId) {
+        def json = """
+        {
+            "userId": ${userId}
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/projects/${projectId}/members")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        mvc.perform(request)
     }
 
 }

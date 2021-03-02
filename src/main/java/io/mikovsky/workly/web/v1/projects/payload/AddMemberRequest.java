@@ -8,18 +8,18 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Positive;
 
 @Value
 @Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@ApiModel(value = "CreateProjectRequest")
-public class CreateProjectRequest {
+@ApiModel(value = "AddMemberRequest")
+public class AddMemberRequest {
 
-    @NotNull(message = "project name cannot be null")
-    @Size(min = 2, max = 64, message = "project name needs to have 2-64 characters")
+    @NotNull(message = "userId cannot be null")
+    @Positive(message = "userId must be positive")
     @ApiModelProperty(required = true, position = 1)
-    String name;
+    Long userId;
 
 }

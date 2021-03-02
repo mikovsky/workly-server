@@ -7,20 +7,19 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.Size;
 
 @Value
 @Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@ApiModel(value = "AddMembersRequest")
-public class AddMembersRequest {
+@ApiModel(value = "UpdateProjectRequest")
+public class UpdateProjectRequest {
 
-    @NotNull(message = "userIds list cannot be null")
-    @NotEmpty(message = "userIds list cannot be empty")
+    @NotNull(message = "project name cannot be null")
+    @Size(min = 2, max = 64, message = "project name needs to have 2-64 characters")
     @ApiModelProperty(required = true, position = 1)
-    List<Long> userIds;
+    String name;
 
 }

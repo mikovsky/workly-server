@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-import org.springframework.http.HttpStatus;
+
+import java.util.UUID;
 
 @Value
 @Builder
@@ -15,6 +16,8 @@ public class ErrorResponse {
     ErrorCode errorCode;
 
     String errorMessage;
+
+    UUID requestUUID;
 
     String details;
 
