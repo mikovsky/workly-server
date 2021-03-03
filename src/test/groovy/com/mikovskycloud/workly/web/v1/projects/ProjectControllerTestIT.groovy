@@ -91,10 +91,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == responseStatus
 
         where:
-        projectName | responseStatus
-        null        | HttpStatus.BAD_REQUEST.value()
-        "\"\""      | HttpStatus.BAD_REQUEST.value()
-        "\"A\""     | HttpStatus.BAD_REQUEST.value()
+        projectName                   | responseStatus
+        null                          | HttpStatus.BAD_REQUEST.value()
+        "\"\""                        | HttpStatus.BAD_REQUEST.value()
+        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
+        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
     }
 
     def "should update project for user"() {
@@ -209,10 +210,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == responseStatus
 
         where:
-        projectName | responseStatus
-        null        | HttpStatus.BAD_REQUEST.value()
-        "\"\""      | HttpStatus.BAD_REQUEST.value()
-        "\"A\""     | HttpStatus.BAD_REQUEST.value()
+        projectName                   | responseStatus
+        null                          | HttpStatus.BAD_REQUEST.value()
+        "\"\""                        | HttpStatus.BAD_REQUEST.value()
+        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
+        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
     }
 
     def "should delete project for user"() {
