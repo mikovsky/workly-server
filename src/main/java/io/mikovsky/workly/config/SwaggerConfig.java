@@ -18,6 +18,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static springfox.documentation.builders.PathSelectors.regex;
@@ -61,6 +62,8 @@ public class SwaggerConfig {
                 .build();
 
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(properties.getHost())
+                .protocols(Set.of(properties.getProtocol()))
                 .apiInfo(apiInfo)
                 .pathMapping("/")
                 .genericModelSubstitutes(ResponseEntity.class)
