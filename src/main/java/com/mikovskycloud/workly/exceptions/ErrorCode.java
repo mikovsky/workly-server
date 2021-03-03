@@ -7,6 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    SECTION_NOT_FOUND("section with given id not found"),
+    SECTION_ALREADY_EXISTS("section with given name already exists in this project"),
     PROJECT_NOT_FOUND("project with given id not found"),
     EMAIL_ALREADY_EXISTS("given email address is already taken"),
     TASK_NOT_FOUND("requested task not found"),

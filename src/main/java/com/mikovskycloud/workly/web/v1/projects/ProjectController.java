@@ -2,6 +2,7 @@ package com.mikovskycloud.workly.web.v1.projects;
 
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.services.ProjectService;
+import com.mikovskycloud.workly.services.SectionService;
 import com.mikovskycloud.workly.web.v1.projects.payload.AddMemberRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.CreateProjectRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.ProjectMemberResponse;
@@ -32,6 +33,8 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+
+    private final SectionService sectionService;
 
     @GetMapping
     @ApiOperation(value = "Get All Projects for User", produces = MediaType.APPLICATION_JSON_VALUE)
