@@ -20,6 +20,7 @@ class IntegrationTest extends Specification {
 
     static final String STRING_33_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     static final String STRING_65_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    static final String STRING_256_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
     static final String DEFAULT_EMAIL = "test@email.com"
     static final String DEFAULT_PASSWORD = "kla3tkf04md1335fa"
