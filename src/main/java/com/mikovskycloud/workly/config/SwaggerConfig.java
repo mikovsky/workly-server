@@ -36,7 +36,7 @@ public class SwaggerConfig {
         return baseDocket()
                 .groupName("Workly Auth API")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("io.mikovsky.workly.web.auth"))
+                .apis(RequestHandlerSelectors.basePackage("com.mikovskycloud.workly.web.auth"))
                 .apis(Predicate.not(RequestHandlerSelectors.withClassAnnotation(SwaggerIgnore.class)))
                 .build();
     }
@@ -46,7 +46,7 @@ public class SwaggerConfig {
         return baseDocket()
                 .groupName("Workly API - v1")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("io.mikovsky.workly.web.v1"))
+                .apis(RequestHandlerSelectors.basePackage("com.mikovskycloud.workly.web.v1"))
                 .apis(Predicate.not(RequestHandlerSelectors.withClassAnnotation(SwaggerIgnore.class)))
                 .build();
     }
