@@ -2,6 +2,7 @@ package com.mikovskycloud.workly.web.v1.users
 
 
 import com.mikovskycloud.workly.IntegrationTest
+import com.mikovskycloud.workly.exceptions.ErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -125,8 +126,8 @@ class UserControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.EMAIL_ALREADY_EXISTS.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()
+        body.errorCode == ErrorCode.EMAIL_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()
     }
 
     @Unroll
@@ -140,7 +141,8 @@ class UserControllerTestIT extends IntegrationTest {
         {
             "email": ${email},
             "firstName": ${firstName},
-            "lastName": ${lastName}
+            "lastName": ${lastName},
+            "jobTitle": "${jobTitle}"
         }
         """
         def request = MockMvcRequestBuilders.put("/api/users")
@@ -152,16 +154,20 @@ class UserControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        email                  | firstName    | lastName
-        null                   | "\"Michal\"" | "\"Dudek\""
-        "\"\""                 | "\"Michal\"" | "\"Dudek\""
-        "\"notvalidemail\""    | "\"Michal\"" | "\"Dudek\""
-        "\"mdudek@email.com\"" | null         | "\"Dudek\""
-        "\"mdudek@email.com\"" | "\"\""       | "\"Dudek\""
-        "\"mdudek@email.com\"" | "\"M\""      | "\"Dudek\""
-        "\"mdudek@email.com\"" | "\"Michal\"" | null
-        "\"mdudek@email.com\"" | "\"Michal\"" | "\"\""
-        "\"mdudek@email.com\"" | "\"Michal\"" | "\"D\""
+        email                                   | firstName                     | lastName                      | jobTitle
+        null                                    | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
+        "\"\""                                  | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
+        "\"notvalidemail\""                     | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
+        "\"${STRING_65_CHARACTERS}@email.com\"" | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
+        "\"mdudek@email.com\""                  | null                          | "\"Dudek\""                   | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"\""                        | "\"Dudek\""                   | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"M\""                       | "\"Dudek\""                   | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"${STRING_65_CHARACTERS}\"" | "\"Dudek\""                   | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"Michal\""                  | null                          | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"\""                        | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"D\""                       | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"${STRING_65_CHARACTERS}\"" | "Software Engineer"
+        "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"Dudek\""                   | "${STRING_65_CHARACTERS}"
     }
 
     def "should update password"() {
@@ -212,8 +218,8 @@ class UserControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.UNAUTHORIZED.value()
 
         def body2 = parseBody(response)
-        body2.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.UNAUTHORIZED.toString()
-        body2.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.UNAUTHORIZED.getMessage()
+        body2.errorCode == ErrorCode.UNAUTHORIZED.toString()
+        body2.errorMessage == ErrorCode.UNAUTHORIZED.getMessage()
 
         when:
         json = """
@@ -261,14 +267,16 @@ class UserControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        currentPassword           | newPassword
-        "\"${DEFAULT_PASSWORD}\"" | null
-        "\"${DEFAULT_PASSWORD}\"" | "\"\""
-        "\"${DEFAULT_PASSWORD}\"" | "\"abcdefg\""
-        null                      | "\"validnewpassword123\""
-        "\"\""                    | "\"validnewpassword123\""
-        "\"abcdefg\""             | "\"validnewpassword123\""
-        "\"notcurrentpassword\""  | "\"validnewpassword123\""
+        currentPassword               | newPassword
+        "\"${DEFAULT_PASSWORD}\""     | null
+        "\"${DEFAULT_PASSWORD}\""     | "\"\""
+        "\"${DEFAULT_PASSWORD}\""     | "\"abcdefg\""
+        "\"${DEFAULT_PASSWORD}\""     | "\"${STRING_65_CHARACTERS}\""
+        null                          | "\"validnewpassword123\""
+        "\"\""                        | "\"validnewpassword123\""
+        "\"abcdefg\""                 | "\"validnewpassword123\""
+        "\"${STRING_65_CHARACTERS}\"" | "\"validnewpassword123\""
+        "\"notcurrentpassword\""      | "\"validnewpassword123\""
     }
 
 }

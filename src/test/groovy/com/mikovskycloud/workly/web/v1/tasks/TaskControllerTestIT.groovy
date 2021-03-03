@@ -1,7 +1,7 @@
 package com.mikovskycloud.workly.web.v1.tasks
 
-
 import com.mikovskycloud.workly.IntegrationTest
+import com.mikovskycloud.workly.exceptions.ErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -105,8 +105,8 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_ALREADY_EXISTS.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_ALREADY_EXISTS.getMessage()
+        body.errorCode == ErrorCode.TASK_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
     @Unroll
@@ -132,11 +132,13 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        taskName         | taskDescription     | taskDueDate
-        null             | "Valid Description" | LocalDate.now().plusDays(1).toString()
-        "\"\""           | "Valid Description" | LocalDate.now().plusDays(1).toString()
-        "\"A\""          | "Valid Description" | LocalDate.now().plusDays(1).toString()
-        "\"Valid Name\"" | "Valid Description" | LocalDate.now().minusDays(2).toString()
+        taskName                      | taskDescription            | taskDueDate
+        null                          | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"\""                        | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"A\""                       | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"${STRING_65_CHARACTERS}\"" | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"Valid Name\""              | "${STRING_256_CHARACTERS}" | LocalDate.now().plusDays(1).toString()
+        "\"Valid Name\""              | "Valid Description"        | LocalDate.now().minusDays(2).toString()
     }
 
     def "should update task"() {
@@ -204,8 +206,8 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.TASK_NOT_FOUND.getMessage()
     }
 
     def "should return error on task update because task with given name already exists for this user"() {
@@ -233,8 +235,8 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_ALREADY_EXISTS.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_ALREADY_EXISTS.getMessage()
+        body.errorCode == ErrorCode.TASK_ALREADY_EXISTS.toString()
+        body.errorMessage == ErrorCode.TASK_ALREADY_EXISTS.getMessage()
     }
 
     @Unroll
@@ -248,8 +250,8 @@ class TaskControllerTestIT extends IntegrationTest {
         def json = """
         {
             "name": ${taskName},
-            "description": "Valid Description",
-            "dueDate": ${dueDate},
+            "description": "${taskDescription}",
+            "dueDate": "${dueDate}",
             "completed": true
         }
         """
@@ -262,11 +264,13 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        taskName         | dueDate
-        null             | "\"${LocalDate.now().plusDays(1).toString()}\""
-        "\"\""           | "\"${LocalDate.now().plusDays(1).toString()}\""
-        "\"A\""          | "\"${LocalDate.now().plusDays(1).toString()}\""
-        "\"Valid Name\"" | "\"${LocalDate.now().minusDays(1).toString()}\""
+        taskName                      | taskDescription            | dueDate
+        null                          | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"\""                        | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"A\""                       | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"${STRING_65_CHARACTERS}\"" | "Valid Description"        | LocalDate.now().plusDays(1).toString()
+        "\"Valid Name\""              | "${STRING_256_CHARACTERS}" | LocalDate.now().plusDays(1).toString()
+        "\"Valid Name\""              | "Valid Description"        | LocalDate.now().minusDays(1).toString()
     }
 
     def "should delete task for user"() {
@@ -302,8 +306,8 @@ class TaskControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.TASK_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.TASK_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.TASK_NOT_FOUND.getMessage()
     }
 
 }

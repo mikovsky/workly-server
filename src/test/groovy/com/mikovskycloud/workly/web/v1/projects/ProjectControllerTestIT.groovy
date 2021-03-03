@@ -1,7 +1,8 @@
 package com.mikovskycloud.workly.web.v1.projects
 
-
 import com.mikovskycloud.workly.IntegrationTest
+import com.mikovskycloud.workly.exceptions.ErrorCode
+import com.mikovskycloud.workly.exceptions.WorklyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -90,10 +91,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == responseStatus
 
         where:
-        projectName | responseStatus
-        null        | HttpStatus.BAD_REQUEST.value()
-        "\"\""      | HttpStatus.BAD_REQUEST.value()
-        "\"A\""     | HttpStatus.BAD_REQUEST.value()
+        projectName                   | responseStatus
+        null                          | HttpStatus.BAD_REQUEST.value()
+        "\"\""                        | HttpStatus.BAD_REQUEST.value()
+        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
+        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
     }
 
     def "should update project for user"() {
@@ -151,8 +153,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.PROJECT_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.PROJECT_NOT_FOUND.getMessage()
     }
 
     def "should return error on project update because project owner is a different user"() {
@@ -182,8 +184,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     @Unroll
@@ -208,10 +210,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == responseStatus
 
         where:
-        projectName | responseStatus
-        null        | HttpStatus.BAD_REQUEST.value()
-        "\"\""      | HttpStatus.BAD_REQUEST.value()
-        "\"A\""     | HttpStatus.BAD_REQUEST.value()
+        projectName                   | responseStatus
+        null                          | HttpStatus.BAD_REQUEST.value()
+        "\"\""                        | HttpStatus.BAD_REQUEST.value()
+        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
+        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
     }
 
     def "should delete project for user"() {
@@ -246,8 +249,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.PROJECT_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.PROJECT_NOT_FOUND.getMessage()
     }
 
     def "should return error on project delete because project owner is a different user"() {
@@ -270,8 +273,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     def "should get all members of the project"() {
@@ -329,8 +332,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.PROJECT_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.PROJECT_NOT_FOUND.getMessage()
     }
 
     def "should return error on get all members of the project because user is not a member of the project"() {
@@ -358,8 +361,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     def "should add member to the project"() {
@@ -417,8 +420,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.PROJECT_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.PROJECT_NOT_FOUND.getMessage()
     }
 
     def "should return error on add member to the project because user is not project owner"() {
@@ -447,8 +450,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     def "should return error on add member to the project because member to add does not exists"() {
@@ -474,8 +477,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.USER_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.USER_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.USER_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.USER_NOT_FOUND.getMessage()
     }
 
     @Unroll
@@ -567,8 +570,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.PROJECT_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.PROJECT_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.PROJECT_NOT_FOUND.getMessage()
     }
 
     def "should return error on delete member from the project because user is not project owner"() {
@@ -597,8 +600,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     def "should return error on delete member from the project because member to remove does not exists"() {
@@ -621,8 +624,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.NOT_FOUND.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.USER_NOT_FOUND.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.USER_NOT_FOUND.getMessage()
+        body.errorCode == ErrorCode.USER_NOT_FOUND.toString()
+        body.errorMessage == ErrorCode.USER_NOT_FOUND.getMessage()
     }
 
     def "should return error on delete member from the project because member to remove is not a member of the project"() {
@@ -646,15 +649,15 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == HttpStatus.FORBIDDEN.value()
 
         def body = parseBody(response)
-        body.errorCode == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.toString()
-        body.errorMessage == com.mikovskycloud.workly.exceptions.ErrorCode.FORBIDDEN.getMessage()
+        body.errorCode == ErrorCode.FORBIDDEN.toString()
+        body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
     static def findById(members, id) {
         return members.stream()
                 .filter({ it -> it.id == id })
                 .findFirst()
-                .orElseThrow({ com.mikovskycloud.workly.exceptions.WorklyException.userNotFound() })
+                .orElseThrow({ WorklyException.userNotFound() })
     }
 
 }

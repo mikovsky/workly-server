@@ -1,9 +1,7 @@
 package com.mikovskycloud.workly
 
-
+import com.mikovskycloud.workly.repositories.*
 import groovy.json.JsonSlurper
-import com.mikovskycloud.workly.repositories.ProjectMemberRepository
-import com.mikovskycloud.workly.repositories.ProjectRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,6 +17,10 @@ import java.time.LocalDate
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class IntegrationTest extends Specification {
+
+    static final String STRING_33_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    static final String STRING_65_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    static final String STRING_256_CHARACTERS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
     static final String DEFAULT_EMAIL = "test@email.com"
     static final String DEFAULT_PASSWORD = "kla3tkf04md1335fa"
@@ -36,22 +38,30 @@ class IntegrationTest extends Specification {
 
     static final String DEFAULT_PROJECT_NAME = "Default Project"
 
+    static final String DEFAULT_SECTION_NAME = "Default Section"
+
+    private static JsonSlurper jsonSlurper = new JsonSlurper()
+
     @Autowired
     protected MockMvc mvc
 
     @Autowired
-    protected com.mikovskycloud.workly.repositories.UserRepository userRepository
+    protected UserRepository userRepository
 
     @Autowired
-    protected com.mikovskycloud.workly.repositories.TaskRepository taskRepository
+    protected TaskRepository taskRepository
 
     @Autowired
     protected ProjectRepository projectRepository
 
     @Autowired
-    protected ProjectMemberRepository projectMemberRepository;
+    protected ProjectMemberRepository projectMemberRepository
+
+    @Autowired
+    protected SectionRepository sectionRepository
 
     void setup() {
+        sectionRepository.deleteAll()
         projectMemberRepository.deleteAll()
         projectRepository.deleteAll()
         taskRepository.deleteAll()
@@ -59,7 +69,7 @@ class IntegrationTest extends Specification {
     }
 
     static def parseBody(response) {
-        return new JsonSlurper().parseText(response.contentAsString)
+        return jsonSlurper.parseText(response.contentAsString)
     }
 
     protected long registerDefaultUser() {
@@ -93,7 +103,7 @@ class IntegrationTest extends Specification {
 
         def response = mvc.perform(request).andReturn().response
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
 
         return body.id
     }
@@ -112,7 +122,7 @@ class IntegrationTest extends Specification {
 
         def response = mvc.perform(request).andReturn().response
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
 
         return body.token
     }
@@ -136,7 +146,7 @@ class IntegrationTest extends Specification {
 
         def response = mvc.perform(request).andReturn().response
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
 
         return body.id
     }
@@ -156,7 +166,7 @@ class IntegrationTest extends Specification {
 
         def response = mvc.perform(request).andReturn().response
 
-        def body = new JsonSlurper().parseText(response.contentAsString)
+        def body = parseBody(response)
 
         return body.id
     }
@@ -176,6 +186,27 @@ class IntegrationTest extends Specification {
                 .contentType(MediaType.APPLICATION_JSON)
 
         mvc.perform(request)
+    }
+
+    protected long storeSection(String token,
+                                Long projectId,
+                                String name = DEFAULT_SECTION_NAME) {
+        def json = """
+        {
+            "name": "${name}"
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/projects/${projectId}/sections")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        def response = mvc.perform(request).andReturn().response
+
+        def body = parseBody(response)
+
+        return body.id
     }
 
 }
