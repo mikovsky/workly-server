@@ -9,3 +9,5 @@ workly:
   security:
     secret: 'SecretForJWT'
     expiration-time: 1800000
+  host: 'localhost:8080'
+  protocol: 'http'

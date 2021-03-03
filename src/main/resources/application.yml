@@ -12,6 +12,8 @@ workly:
     token-prefix: 'Bearer '
     expiration-time: ${JWT_EXP_TIME}
   swagger:
+    host: ${WORKLY_HOST}
+    protocol: 'https'
     contact:
       name: 'Michał Dudek'
       url: 'https://instagram.com/_mikovsky_/'

@@ -26,4 +26,10 @@ public class SwaggerProperties {
     @Value("${workly.swagger.apinfo.version}")
     private String apiInfoVersion;
 
+    @Value("${workly.swagger.host}")
+    private String host;
+
+    @Value("${workly.swagger.protocol}")
+    private String protocol;
+
 }
