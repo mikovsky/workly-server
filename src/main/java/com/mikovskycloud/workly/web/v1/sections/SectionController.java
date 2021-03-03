@@ -5,6 +5,7 @@ import com.mikovskycloud.workly.services.SectionService;
 import com.mikovskycloud.workly.web.v1.sections.payload.CreateSectionRequest;
 import com.mikovskycloud.workly.web.v1.sections.payload.SectionResponse;
 import com.mikovskycloud.workly.web.v1.sections.payload.UpdateSectionRequest;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/projects/{projectId}/sections")
 @RequiredArgsConstructor
+@Api(tags = "Sections")
 public class SectionController {
 
     private final SectionService sectionService;
