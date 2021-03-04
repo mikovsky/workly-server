@@ -174,34 +174,6 @@ class SectionControllerTestIT extends IntegrationTest {
         body.errorMessage == ErrorCode.FORBIDDEN.getMessage()
     }
 
-    def "should return error on add section to the project because section with given name already exists in this project"() {
-        given:
-        def id = registerDefaultUser()
-        def token = getDefaultUserToken()
-        def projectId = storeProject(token)
-        def sectionId1 = storeSection(token, projectId, "Section 1")
-
-        when:
-        def json = """
-        {
-            "name": "Section 1"
-        }
-        """
-        def request = MockMvcRequestBuilders.post("/api/projects/${projectId}/sections")
-                .header("Authorization", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-        def response = mvc.perform(request).andReturn().response
-
-        then:
-        response != null
-        response.status == HttpStatus.BAD_REQUEST.value()
-
-        def body = parseBody(response)
-        body.errorCode == ErrorCode.SECTION_ALREADY_EXISTS.toString()
-        body.errorMessage == ErrorCode.SECTION_ALREADY_EXISTS.getMessage()
-    }
-
     @Unroll
     def "should return error on add section to the project because of invalid payload"() {
         given:
@@ -345,34 +317,6 @@ class SectionControllerTestIT extends IntegrationTest {
         def body = parseBody(response)
         body.errorCode == ErrorCode.SECTION_NOT_FOUND.toString()
         body.errorMessage == ErrorCode.SECTION_NOT_FOUND.getMessage()
-    }
-
-    def "should return error on update section from the project section with given name already exists in this project"() {
-        given:
-        def id = registerDefaultUser()
-        def token = getDefaultUserToken()
-        def projectId = storeProject(token)
-        def sectionId = storeSection(token, projectId, "Section 1")
-
-        when:
-        def json = """
-        {
-            "name": "Section 1"
-        }
-        """
-        def request = MockMvcRequestBuilders.put("/api/projects/${projectId}/sections/${sectionId}")
-                .header("Authorization", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-        def response = mvc.perform(request).andReturn().response
-
-        then:
-        response != null
-        response.status == HttpStatus.BAD_REQUEST.value()
-
-        def body = parseBody(response)
-        body.errorCode == ErrorCode.SECTION_ALREADY_EXISTS.toString()
-        body.errorMessage == ErrorCode.SECTION_ALREADY_EXISTS.getMessage()
     }
 
     @Unroll

@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -27,9 +26,7 @@ public class UserService {
     public User updateUser(UpdateUserRequest request, User user) {
         if (request.isEmpty()) throw WorklyException.emptyRequest();
 
-        User userByEmail = findByEmail(request.getEmail());
-
-        if (Objects.equals(userByEmail.getId(), user.getId())) {
+        if (userRepository.existsByEmailAndIdIsNot(request.getEmail(), user.getId())) {
             throw WorklyException.emailAlreadyExists();
         }
 
