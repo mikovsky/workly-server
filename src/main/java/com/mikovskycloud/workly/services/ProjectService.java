@@ -84,7 +84,7 @@ public class ProjectService {
         Project project = findById(projectId);
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
-        List<Long> membersIDs = StreamEx.of(projectMemberRepository.findAllByUserId(user.getId()))
+        List<Long> membersIDs = StreamEx.of(projectMemberRepository.findAllByProjectId(project.getId()))
                 .map(ProjectMember::getUserId)
                 .toList();
 
