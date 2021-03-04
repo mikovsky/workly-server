@@ -1,8 +1,8 @@
 package com.mikovskycloud.workly.services;
 
+import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.exceptions.WorklyException;
 import com.mikovskycloud.workly.repositories.UserRepository;
-import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.web.v1.users.payload.UpdateUserPasswordRequest;
 import com.mikovskycloud.workly.web.v1.users.payload.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,15 +24,17 @@ public class UserService {
 
     @Transactional
     public User updateUser(UpdateUserRequest request, User principal) {
+        if (request.isEmpty()) throw WorklyException.emptyRequest();
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw WorklyException.emailAlreadyExists();
         }
 
         User user = findById(principal.getId());
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setJobTitle(request.getJobTitle());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getJobTitle() != null) user.setJobTitle(request.getJobTitle());
         return update(user);
     }
 

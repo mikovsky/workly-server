@@ -2,6 +2,7 @@ package com.mikovskycloud.workly.web.v1.sections;
 
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.services.SectionService;
+import com.mikovskycloud.workly.validation.RequestValidator;
 import com.mikovskycloud.workly.web.v1.sections.payload.CreateSectionRequest;
 import com.mikovskycloud.workly.web.v1.sections.payload.SectionResponse;
 import com.mikovskycloud.workly.web.v1.sections.payload.UpdateSectionRequest;
@@ -9,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,8 @@ public class SectionController {
 
     private final SectionService sectionService;
 
+    private final RequestValidator requestValidator;
+
     @GetMapping
     @ApiOperation(value = "Get all Section from Project")
     public List<SectionResponse> getProjectSections(@PathVariable Long projectId, Principal principal) {
@@ -41,7 +45,9 @@ public class SectionController {
     @ApiOperation(value = "Add Section to Project")
     public SectionResponse addSectionToProject(@PathVariable Long projectId,
                                                @Valid @RequestBody CreateSectionRequest request,
+                                               BindingResult bindingResult,
                                                Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return sectionService.addSectionToProject(projectId, request, user);
     }
@@ -51,7 +57,9 @@ public class SectionController {
     public SectionResponse updateSectionFromProject(@PathVariable Long projectId,
                                                     @PathVariable Long sectionId,
                                                     @Valid @RequestBody UpdateSectionRequest request,
+                                                    BindingResult bindingResult,
                                                     Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return sectionService.updateSectionFromProject(projectId, sectionId, request, user);
     }

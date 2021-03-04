@@ -1,13 +1,14 @@
 package com.mikovskycloud.workly.web.auth;
 
-import com.mikovskycloud.workly.web.auth.payload.LoginRequest;
-import com.mikovskycloud.workly.web.auth.payload.RegisterRequest;
-import com.mikovskycloud.workly.web.auth.payload.RegisterResponse;
-import com.mikovskycloud.workly.web.auth.payload.TokenResponse;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.security.JwtTokenProvider;
 import com.mikovskycloud.workly.security.SecurityProperties;
 import com.mikovskycloud.workly.services.UserService;
+import com.mikovskycloud.workly.validation.RequestValidator;
+import com.mikovskycloud.workly.web.auth.payload.LoginRequest;
+import com.mikovskycloud.workly.web.auth.payload.RegisterRequest;
+import com.mikovskycloud.workly.web.auth.payload.RegisterResponse;
+import com.mikovskycloud.workly.web.auth.payload.TokenResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +39,16 @@ public class AuthenticationController {
 
     private final SecurityProperties properties;
 
+    private final RequestValidator requestValidator;
+
     @PostMapping("/register")
     @ApiOperation(
             value = "Register new account",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public RegisterResponse register(@Valid @RequestBody RegisterRequest request) {
+    public RegisterResponse register(@Valid @RequestBody RegisterRequest request, BindingResult bindingResult) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User savedUser = userService.save(request.toUser());
         return RegisterResponse.fromUser(savedUser);
     }
@@ -54,7 +59,8 @@ public class AuthenticationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+    public TokenResponse login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );

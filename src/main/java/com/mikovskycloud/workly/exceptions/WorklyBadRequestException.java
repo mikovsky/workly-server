@@ -1,10 +1,6 @@
 package com.mikovskycloud.workly.exceptions;
 
 import lombok.Getter;
-import one.util.streamex.StreamEx;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import java.util.Map;
 import java.util.UUID;
@@ -16,27 +12,25 @@ public class WorklyBadRequestException extends RuntimeException {
 
     String errorMessage;
 
-    BindingResult bindingResult;
+    Map<String, String> validationResults;
 
-    public WorklyBadRequestException(ErrorCode errorCode, String errorMessage, BindingResult bindingResult) {
+    public WorklyBadRequestException(ErrorCode errorCode, String errorMessage, Map<String, String> validationResults) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
-        this.bindingResult = bindingResult;
+        this.validationResults = validationResults;
     }
 
     public WorklyBadRequestResponse toResponse(UUID requestUUID) {
-        Map<String, String> details = StreamEx.of(bindingResult.getFieldErrors())
-                .toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage);
         return WorklyBadRequestResponse.builder()
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)
                 .requestUUID(requestUUID)
-                .details(details)
+                .details(validationResults)
                 .build();
     }
 
-    public static WorklyBadRequestException of(BindingResult bindingResult) {
-        return new WorklyBadRequestException(ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getMessage(), bindingResult);
+    public static WorklyBadRequestException of(Map<String, String> validationResults) {
+        return new WorklyBadRequestException(ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getMessage(), validationResults);
     }
 
 }

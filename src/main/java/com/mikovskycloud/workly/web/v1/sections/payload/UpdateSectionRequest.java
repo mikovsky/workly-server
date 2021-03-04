@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Value
@@ -17,9 +16,12 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "UpdateSectionRequest")
 public class UpdateSectionRequest {
 
-    @NotNull(message = "section name cannot be null")
     @Size(min = 2, max = 32, message = "section name needs to have 2-32 characters")
     @ApiModelProperty(required = true, position = 1)
     String name;
+
+    public boolean isEmpty() {
+        return name == null;
+    }
 
 }

@@ -49,7 +49,8 @@ public class TaskController {
 
     @PostMapping
     @ApiOperation(value = "Create new Task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, Principal principal) {
+    public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, BindingResult bindingResult, Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         Task task = taskService.saveNewTask(request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(task);
     }

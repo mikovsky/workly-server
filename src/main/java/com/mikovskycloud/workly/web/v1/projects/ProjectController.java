@@ -2,6 +2,7 @@ package com.mikovskycloud.workly.web.v1.projects;
 
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.services.ProjectService;
+import com.mikovskycloud.workly.validation.RequestValidator;
 import com.mikovskycloud.workly.web.v1.projects.payload.AddMemberRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.CreateProjectRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.ProjectMemberResponse;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +35,8 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    private final RequestValidator requestValidator;
+
     @GetMapping
     @ApiOperation(value = "Get All Projects for User", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProjectResponse> getAllProjectsForUser(Principal principal) {
@@ -43,7 +47,9 @@ public class ProjectController {
     @PostMapping
     @ApiOperation(value = "Create Projects for User", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectResponse createNewProjectForUser(@Valid @RequestBody CreateProjectRequest request,
+                                                   BindingResult bindingResult,
                                                    Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return projectService.saveProjectForUser(request, user);
     }
@@ -52,7 +58,9 @@ public class ProjectController {
     @ApiOperation(value = "Update Project for User", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectResponse updateProject(@PathVariable Long projectId,
                                          @Valid @RequestBody UpdateProjectRequest request,
+                                         BindingResult bindingResult,
                                          Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return projectService.updateProject(projectId, request, user);
     }
@@ -75,7 +83,9 @@ public class ProjectController {
     @ApiOperation(value = "Add Member to Project", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectMemberResponse addMemberToProject(@PathVariable Long projectId,
                                                     @Valid @RequestBody AddMemberRequest request,
+                                                    BindingResult bindingResult,
                                                     Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return projectService.addMemberToProjectWithId(projectId, request, user);
     }

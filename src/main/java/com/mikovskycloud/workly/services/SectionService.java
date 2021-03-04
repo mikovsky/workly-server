@@ -53,6 +53,8 @@ public class SectionService {
     }
 
     public SectionResponse updateSectionFromProject(Long projectId, Long sectionId, UpdateSectionRequest request, User user) {
+        if (request.isEmpty()) throw WorklyException.emptyRequest();
+
         Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
@@ -62,7 +64,7 @@ public class SectionService {
             throw WorklyException.sectionAlreadyExists();
         }
 
-        section.setName(request.getName());
+        if (request.getName() != null) section.setName(request.getName());
         Section updatedSection = update(section);
 
         return SectionResponse.fromSection(updatedSection);

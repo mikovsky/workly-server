@@ -60,10 +60,12 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponse updateProject(Long projectId, UpdateProjectRequest request, User user) {
+        if (request.isEmpty()) throw WorklyException.emptyRequest();
+
         Project project = findById(projectId);
         authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
-        project.setName(request.getName());
+        if (request.getName() != null) project.setName(request.getName());
         Project updatedProject = update(project);
         return ProjectResponse.fromProject(updatedProject);
     }
