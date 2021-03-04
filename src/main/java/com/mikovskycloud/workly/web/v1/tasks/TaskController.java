@@ -40,7 +40,8 @@ public class TaskController {
 
     @GetMapping
     @ApiOperation(value = "Get all Tasks for currently logged user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskResponse> getTasks(Principal principal) {
+    public List<TaskResponse> getTasks(BindingResult bindingResult, Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return StreamEx.of(taskService.getTasksByUserId(user.getId()))
                 .map(TaskResponse::fromTask)
@@ -49,7 +50,8 @@ public class TaskController {
 
     @PostMapping
     @ApiOperation(value = "Create new Task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, Principal principal) {
+    public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest request, BindingResult bindingResult, Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         Task task = taskService.saveNewTask(request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(task);
     }
@@ -67,7 +69,8 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     @ApiOperation(value = "Delete Task with given ID")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, Principal principal) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, BindingResult bindingResult, Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         taskService.deleteTask(taskId, User.fromPrincipal(principal));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
