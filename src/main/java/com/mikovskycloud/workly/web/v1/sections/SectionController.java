@@ -36,8 +36,7 @@ public class SectionController {
 
     @GetMapping
     @ApiOperation(value = "Get all Section from Project")
-    public List<SectionResponse> getProjectSections(@PathVariable Long projectId, BindingResult bindingResult, Principal principal) {
-        requestValidator.throwIfRequestIsInvalid(bindingResult);
+    public List<SectionResponse> getProjectSections(@PathVariable Long projectId, Principal principal) {
         User user = User.fromPrincipal(principal);
         return sectionService.getSectionsForProject(projectId, user);
     }
@@ -69,9 +68,7 @@ public class SectionController {
     @ApiOperation(value = "Delete Section from Project")
     public ResponseEntity<Void> deleteSectionFromProject(@PathVariable Long projectId,
                                                          @PathVariable Long sectionId,
-                                                         BindingResult bindingResult,
                                                          Principal principal) {
-        requestValidator.throwIfRequestIsInvalid(bindingResult);
         User user = User.fromPrincipal(principal);
         return sectionService.deleteSectionFromProject(projectId, sectionId, user);
     }
