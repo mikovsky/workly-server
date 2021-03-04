@@ -4,6 +4,7 @@ import com.mikovskycloud.workly.domain.Project;
 import com.mikovskycloud.workly.domain.Section;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.exceptions.WorklyException;
+import com.mikovskycloud.workly.repositories.ProjectRepository;
 import com.mikovskycloud.workly.repositories.SectionRepository;
 import com.mikovskycloud.workly.web.v1.sections.payload.CreateSectionRequest;
 import com.mikovskycloud.workly.web.v1.sections.payload.SectionResponse;
@@ -22,13 +23,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SectionService {
 
-    private final ProjectService projectService;
-
     private final SectionRepository sectionRepository;
 
+    private final ProjectRepository projectRepository;
+
+    private final AuthorizeService authorizeService;
+
     public List<SectionResponse> getSectionsForProject(Long projectId, User user) {
-        Project project = projectService.findById(projectId);
-        projectService.throwIfNotProjectMember(project.getId(), user.getId());
+        Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
+        authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         return StreamEx.of(sectionRepository.findAllByProjectId(project.getId()))
                 .map(SectionResponse::fromSection)
@@ -36,8 +39,8 @@ public class SectionService {
     }
 
     public SectionResponse addSectionToProject(Long projectId, CreateSectionRequest request, User user) {
-        Project project = projectService.findById(projectId);
-        projectService.throwIfNotProjectMember(project.getId(), user.getId());
+        Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
+        authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         if (sectionRepository.existsByProjectIdAndName(project.getId(), request.getName())) {
             throw WorklyException.sectionAlreadyExists();
@@ -50,8 +53,8 @@ public class SectionService {
     }
 
     public SectionResponse updateSectionFromProject(Long projectId, Long sectionId, UpdateSectionRequest request, User user) {
-        Project project = projectService.findById(projectId);
-        projectService.throwIfNotProjectMember(project.getId(), user.getId());
+        Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
+        authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         Section section = findById(sectionId);
 
@@ -66,8 +69,8 @@ public class SectionService {
     }
 
     public ResponseEntity<Void> deleteSectionFromProject(Long projectId, Long sectionId, User user) {
-        Project project = projectService.findById(projectId);
-        projectService.throwIfNotProjectMember(project.getId(), user.getId());
+        Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
+        authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         Section section = findById(sectionId);
         sectionRepository.deleteById(section.getId());

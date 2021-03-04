@@ -127,17 +127,6 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public void throwIfNotProjectOwner(Project project, Long userId) {
-        if (!Objects.equals(project.getUserId(), userId)) {
-            throw WorklyException.forbidden();
-        }
-    }
 
-    public void throwIfNotProjectMember(Long projectId, Long userId) {
-        List<Long> membersIds = projectMemberService.findAllMembersIdsForProjectWithId(projectId);
-        if (!membersIds.contains(userId)) {
-            throw WorklyException.forbidden();
-        }
-    }
 
 }
