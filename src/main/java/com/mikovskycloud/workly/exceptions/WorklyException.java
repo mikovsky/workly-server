@@ -26,6 +26,10 @@ public class WorklyException extends RuntimeException {
                 .build();
     }
 
+    public static WorklyException emptyRequest() {
+        return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.EMPTY_REQUEST, ErrorCode.EMPTY_REQUEST.getMessage());
+    }
+
     public static WorklyException sectionAlreadyExists() {
         return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.SECTION_ALREADY_EXISTS, ErrorCode.SECTION_ALREADY_EXISTS.getMessage());
     }
