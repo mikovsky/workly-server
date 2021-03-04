@@ -42,10 +42,6 @@ public class SectionService {
         Project project = projectRepository.findById(projectId).orElseThrow(WorklyException::projectNotFound);
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
-        if (sectionRepository.existsByProjectIdAndName(project.getId(), request.getName())) {
-            throw WorklyException.sectionAlreadyExists();
-        }
-
         Section section = Section.of(project.getId(), request.getName());
         Section savedSection = save(section);
 
@@ -59,11 +55,6 @@ public class SectionService {
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         Section section = findById(sectionId);
-
-        if (sectionRepository.existsByProjectIdAndName(project.getId(), request.getName())) {
-            throw WorklyException.sectionAlreadyExists();
-        }
-
         if (request.getName() != null) section.setName(request.getName());
         Section updatedSection = update(section);
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,14 +24,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User updateUser(UpdateUserRequest request, User principal) {
+    public User updateUser(UpdateUserRequest request, User user) {
         if (request.isEmpty()) throw WorklyException.emptyRequest();
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        User userByEmail = findByEmail(request.getEmail());
+
+        if (Objects.equals(userByEmail.getId(), user.getId())) {
             throw WorklyException.emailAlreadyExists();
         }
 
-        User user = findById(principal.getId());
         if (request.getEmail() != null) user.setEmail(request.getEmail());
         if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
         if (request.getLastName() != null) user.setLastName(request.getLastName());
@@ -39,8 +41,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserPassword(UpdateUserPasswordRequest request, User principal) {
-        User user = findById(principal.getId());
+    public User updateUserPassword(UpdateUserPasswordRequest request, User user) {
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw WorklyException.incorrectCurrentPassword();
         }

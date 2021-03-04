@@ -30,10 +30,6 @@ public class WorklyException extends RuntimeException {
         return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.EMPTY_REQUEST, ErrorCode.EMPTY_REQUEST.getMessage());
     }
 
-    public static WorklyException sectionAlreadyExists() {
-        return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.SECTION_ALREADY_EXISTS, ErrorCode.SECTION_ALREADY_EXISTS.getMessage());
-    }
-
     public static WorklyException sectionNotFound() {
         return new WorklyException(HttpStatus.NOT_FOUND, ErrorCode.SECTION_NOT_FOUND, ErrorCode.SECTION_NOT_FOUND.getMessage());
     }
@@ -42,20 +38,16 @@ public class WorklyException extends RuntimeException {
         return new WorklyException(HttpStatus.NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND.getMessage());
     }
 
-    public static WorklyException emailAlreadyExists() {
-        return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS, ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
-    }
-
     public static WorklyException taskNotFound() {
         return new WorklyException(HttpStatus.NOT_FOUND, ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage());
     }
 
-    public static WorklyException taskAlreadyExists() {
-        return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.TASK_ALREADY_EXISTS, ErrorCode.TASK_ALREADY_EXISTS.getMessage());
-    }
-
     public static WorklyException userNotFound() {
         return new WorklyException(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage());
+    }
+
+    public static WorklyException emailAlreadyExists() {
+        return new WorklyException(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_ALREADY_EXISTS, ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
     }
 
     public static WorklyException incorrectCurrentPassword() {

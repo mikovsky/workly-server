@@ -23,10 +23,6 @@ public class TaskService {
     }
 
     public Task saveNewTask(CreateTaskRequest request, User principal) {
-        if (taskRepository.existsByNameAndUserId(request.getName(), principal.getId())) {
-            throw WorklyException.taskAlreadyExists();
-        }
-
         Task task = request.toTask(principal.getId());
         return save(task);
     }
@@ -34,12 +30,7 @@ public class TaskService {
     public Task updateTask(Long taskId, UpdateTaskRequest request, User principal) {
         if (request.isEmpty()) throw WorklyException.emptyRequest();
 
-        if (taskRepository.existsByNameAndUserId(request.getName(), principal.getId())) {
-            throw WorklyException.taskAlreadyExists();
-        }
-
         Task task = getTaskByIdAndUserId(taskId, principal.getId());
-
         if (request.getName() != null) task.setName(request.getName());
         if (request.getDescription() != null) task.setDescription(request.getDescription());
         if (request.getCompleted() != null) task.setCompleted(request.getCompleted());
