@@ -96,6 +96,126 @@ class UserControllerTestIT extends IntegrationTest {
         body.jobTitle == newJobTitle
     }
 
+    def "should update only specific user information"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def updatedEmail = "somenewemail@email.com"
+
+        when:
+        def json = """
+        {
+            "email": "${updatedEmail}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/users")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == id
+        body.email == updatedEmail
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == null
+    }
+
+    def "should update only firstName"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def updatedFirstName = "Some Other First Name"
+
+        when:
+        def json = """
+        {
+            "firstName": "${updatedFirstName}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/users")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == id
+        body.email == DEFAULT_EMAIL
+        body.firstName == updatedFirstName
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == null
+    }
+
+    def "should update only lastName"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def updatedLastName = "Some Other Last Name"
+
+        when:
+        def json = """
+        {
+            "lastName": "${updatedLastName}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/users")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == id
+        body.email == DEFAULT_EMAIL
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == updatedLastName
+        body.jobTitle == null
+    }
+
+    def "should update only jobTitle"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def updatedJobTitle = "Some Job Title"
+
+        when:
+        def json = """
+        {
+            "jobTitle": "${updatedJobTitle}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/users")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == id
+        body.email == DEFAULT_EMAIL
+        body.firstName == DEFAULT_FIRST_NAME
+        body.lastName == DEFAULT_LAST_NAME
+        body.jobTitle == updatedJobTitle
+    }
+
     def "should return error on update user information when email already exists"() {
         given:
         registerUser("mdudek@email.com", "abcdef", "ghijkl", "mnopqrstu")
@@ -155,15 +275,12 @@ class UserControllerTestIT extends IntegrationTest {
 
         where:
         email                                   | firstName                     | lastName                      | jobTitle
-        null                                    | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
         "\"\""                                  | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
         "\"notvalidemail\""                     | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
         "\"${STRING_65_CHARACTERS}@email.com\"" | "\"Michal\""                  | "\"Dudek\""                   | "Software Engineer"
-        "\"mdudek@email.com\""                  | null                          | "\"Dudek\""                   | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"\""                        | "\"Dudek\""                   | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"M\""                       | "\"Dudek\""                   | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"${STRING_65_CHARACTERS}\"" | "\"Dudek\""                   | "Software Engineer"
-        "\"mdudek@email.com\""                  | "\"Michal\""                  | null                          | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"\""                        | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"D\""                       | "Software Engineer"
         "\"mdudek@email.com\""                  | "\"Michal\""                  | "\"${STRING_65_CHARACTERS}\"" | "Software Engineer"
