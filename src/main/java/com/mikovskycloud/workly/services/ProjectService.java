@@ -4,7 +4,10 @@ import com.mikovskycloud.workly.domain.Project;
 import com.mikovskycloud.workly.domain.ProjectMember;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.exceptions.WorklyException;
+import com.mikovskycloud.workly.repositories.ProjectMemberRepository;
 import com.mikovskycloud.workly.repositories.ProjectRepository;
+import com.mikovskycloud.workly.repositories.SectionRepository;
+import com.mikovskycloud.workly.repositories.UserRepository;
 import com.mikovskycloud.workly.web.v1.projects.payload.AddMemberRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.CreateProjectRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.ProjectMemberResponse;
@@ -20,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +30,17 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    private final ProjectMemberService projectMemberService;
+    private final ProjectMemberRepository projectMemberRepository;
+
+    private final SectionRepository sectionRepository;
+
+    private final AuthorizeService authorizeService;
 
     @Transactional
     public List<ProjectResponse> getProjectsForUser(User user) {
-        List<Long> projectIDs = StreamEx.of(projectMemberService.findAllByUserId(user.getId()))
+        List<Long> projectIDs = StreamEx.of(projectMemberRepository.findAllByUserId(user.getId()))
                 .map(ProjectMember::getProjectId)
                 .toList();
 
@@ -48,41 +54,41 @@ public class ProjectService {
         Project project = Project.of(user.getId(), request.getName());
         Project savedProject = save(project);
         ProjectMember projectMember = ProjectMember.of(savedProject.getId(), user.getId());
-        projectMemberService.save(projectMember);
-
+        projectMemberRepository.save(projectMember);
         return ProjectResponse.fromProject(savedProject);
     }
 
     @Transactional
     public ProjectResponse updateProject(Long projectId, UpdateProjectRequest request, User user) {
         Project project = findById(projectId);
-        throwIfNotProjectOwner(project, user.getId());
+        authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
         project.setName(request.getName());
         Project updatedProject = update(project);
-
         return ProjectResponse.fromProject(updatedProject);
     }
 
     @Transactional
     public ResponseEntity<Void> deleteProject(Long projectId, User user) {
         Project project = findById(projectId);
-        throwIfNotProjectOwner(project, user.getId());
+        authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
-        projectMemberService.deleteAllByProjectId(projectId);
+        sectionRepository.deleteAllByProjectId(projectId);
+        projectMemberRepository.deleteAllByProjectId(projectId);
         projectRepository.deleteById(projectId);
-
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Transactional
     public List<ProjectMemberResponse> getMembersForProjectWithId(Long projectId, User user) {
         Project project = findById(projectId);
-        throwIfNotProjectMember(project.getId(), user.getId());
+        authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
-        List<Long> membersIds = projectMemberService.findAllMembersIdsForProjectWithId(project.getId());
+        List<Long> membersIDs = StreamEx.of(projectMemberRepository.findAllByProjectId(project.getId()))
+                .map(ProjectMember::getUserId)
+                .toList();
 
-        return StreamEx.of(userService.findAllWhereIdIn(membersIds))
+        return StreamEx.of(userRepository.findAllByIdIn(membersIDs))
                 .map(ProjectMemberResponse::fromUser)
                 .toList();
     }
@@ -90,24 +96,22 @@ public class ProjectService {
     @Transactional
     public ProjectMemberResponse addMemberToProjectWithId(Long projectId, AddMemberRequest request, User user) {
         Project project = findById(projectId);
-        throwIfNotProjectOwner(project, user.getId());
+        authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
-        User member = userService.findById(request.getUserId());
-        projectMemberService.save(ProjectMember.of(project.getId(), member.getId()));
-
+        User member = userRepository.findById(request.getUserId()).orElseThrow(WorklyException::userNotFound);
+        projectMemberRepository.save(ProjectMember.of(project.getId(), member.getId()));
         return ProjectMemberResponse.fromUser(member);
     }
 
     @Transactional
     public ResponseEntity<Void> deleteMemberFromProject(Long projectId, Long memberId, User user) {
         Project project = findById(projectId);
-        throwIfNotProjectOwner(project, user.getId());
+        authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
-        User member = userService.findById(memberId);
-        throwIfNotProjectMember(project.getId(), member.getId());
+        User member = userRepository.findById(memberId).orElseThrow(WorklyException::userNotFound);
+        authorizeService.throwIfNotProjectMember(project.getId(), member.getId());
 
-        projectMemberService.deleteByProjectIdAndUserId(project.getId(), memberId);
-
+        projectMemberRepository.deleteByProjectIdAndUserId(project.getId(), memberId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -125,19 +129,6 @@ public class ProjectService {
     public Project update(Project project) {
         project.setUpdatedAt(Instant.now());
         return projectRepository.save(project);
-    }
-
-    public void throwIfNotProjectOwner(Project project, Long userId) {
-        if (!Objects.equals(project.getUserId(), userId)) {
-            throw WorklyException.forbidden();
-        }
-    }
-
-    public void throwIfNotProjectMember(Long projectId, Long userId) {
-        List<Long> membersIds = projectMemberService.findAllMembersIdsForProjectWithId(projectId);
-        if (!membersIds.contains(userId)) {
-            throw WorklyException.forbidden();
-        }
     }
 
 }

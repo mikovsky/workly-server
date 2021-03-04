@@ -13,4 +13,6 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
     boolean existsByProjectIdAndName(Long projectId, String name);
 
+    void deleteAllByProjectId(Long projectId);
+
 }
