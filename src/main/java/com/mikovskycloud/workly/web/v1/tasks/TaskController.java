@@ -40,8 +40,7 @@ public class TaskController {
 
     @GetMapping
     @ApiOperation(value = "Get all Tasks for currently logged user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskResponse> getTasks(BindingResult bindingResult, Principal principal) {
-        requestValidator.throwIfRequestIsInvalid(bindingResult);
+    public List<TaskResponse> getTasks(Principal principal) {
         User user = User.fromPrincipal(principal);
         return StreamEx.of(taskService.getTasksByUserId(user.getId()))
                 .map(TaskResponse::fromTask)
@@ -69,8 +68,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     @ApiOperation(value = "Delete Task with given ID")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, BindingResult bindingResult, Principal principal) {
-        requestValidator.throwIfRequestIsInvalid(bindingResult);
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId, Principal principal) {
         taskService.deleteTask(taskId, User.fromPrincipal(principal));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
