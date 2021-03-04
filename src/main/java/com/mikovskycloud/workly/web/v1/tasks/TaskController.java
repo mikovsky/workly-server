@@ -3,6 +3,7 @@ package com.mikovskycloud.workly.web.v1.tasks;
 import com.mikovskycloud.workly.domain.Task;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.services.TaskService;
+import com.mikovskycloud.workly.validation.RequestValidator;
 import com.mikovskycloud.workly.web.v1.tasks.payload.CreateTaskRequest;
 import com.mikovskycloud.workly.web.v1.tasks.payload.TaskResponse;
 import com.mikovskycloud.workly.web.v1.tasks.payload.UpdateTaskRequest;
@@ -13,6 +14,7 @@ import one.util.streamex.StreamEx;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +36,8 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    private final RequestValidator requestValidator;
+
     @GetMapping
     @ApiOperation(value = "Get all Tasks for currently logged user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskResponse> getTasks(Principal principal) {
@@ -52,7 +56,11 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     @ApiOperation(value = "Update Task with given ID", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TaskResponse updateTask(@PathVariable Long taskId, @Valid @RequestBody UpdateTaskRequest request, Principal principal) {
+    public TaskResponse updateTask(@PathVariable Long taskId,
+                                   @Valid @RequestBody UpdateTaskRequest request,
+                                   BindingResult bindingResult,
+                                   Principal principal) {
+        requestValidator.throwIfRequestIsInvalid(bindingResult);
         Task updatedTask = taskService.updateTask(taskId, request, User.fromPrincipal(principal));
         return TaskResponse.fromTask(updatedTask);
     }

@@ -1,9 +1,9 @@
 package com.mikovskycloud.workly.services;
 
-import com.mikovskycloud.workly.repositories.TaskRepository;
 import com.mikovskycloud.workly.domain.Task;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.exceptions.WorklyException;
+import com.mikovskycloud.workly.repositories.TaskRepository;
 import com.mikovskycloud.workly.web.v1.tasks.payload.CreateTaskRequest;
 import com.mikovskycloud.workly.web.v1.tasks.payload.UpdateTaskRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +32,18 @@ public class TaskService {
     }
 
     public Task updateTask(Long taskId, UpdateTaskRequest request, User principal) {
+        if (request.isEmpty()) throw WorklyException.emptyRequest();
+
         if (taskRepository.existsByNameAndUserId(request.getName(), principal.getId())) {
             throw WorklyException.taskAlreadyExists();
         }
 
         Task task = getTaskByIdAndUserId(taskId, principal.getId());
-        task.setName(request.getName());
-        task.setDescription(request.getDescription());
-        task.setCompleted(request.getCompleted());
-        task.setDueDate(request.getDueDate());
+
+        if (request.getName() != null) task.setName(request.getName());
+        if (request.getDescription() != null) task.setDescription(request.getDescription());
+        if (request.getCompleted() != null) task.setCompleted(request.getCompleted());
+        if (request.getDueDate() != null) task.setDueDate(request.getDueDate());
         return update(task);
     }
 

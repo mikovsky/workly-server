@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -19,7 +18,6 @@ import java.time.LocalDate;
 @ApiModel(value = "UpdateTaskRequest")
 public class UpdateTaskRequest {
 
-    @NotNull(message = "task name cannot be null")
     @Size(min = 2, max = 64, message = "task name needs to have 2-64 characters")
     @ApiModelProperty(required = true, position = 1)
     String name;
@@ -34,5 +32,9 @@ public class UpdateTaskRequest {
     @FutureOrPresent(message = "dueDate must be a future date")
     @ApiModelProperty(required = false, position = 4)
     LocalDate dueDate;
+
+    public boolean isEmpty() {
+        return name == null && description == null && completed == null && dueDate == null;
+    }
 
 }

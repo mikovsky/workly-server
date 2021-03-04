@@ -181,6 +181,111 @@ class TaskControllerTestIT extends IntegrationTest {
         body.createdAt != body.updatedAt
     }
 
+    def "should update only description value in task"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        def newTaskDescription = "My Updated Task Description 1"
+
+        when:
+        def json = """
+        {
+            "description": "${newTaskDescription}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/tasks/${taskId}")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == taskId
+        body.name == DEFAULT_TASK_NAME
+        body.description == newTaskDescription
+        body.dueDate == DEFAULT_TASK_DUE_DATE
+        body.completed == false
+        body.createdAt != null
+        body.updatedAt != null
+        body.createdAt != body.updatedAt
+    }
+
+    def "should update only dueDate value in task"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        def newDueDate = LocalDate.now().plusDays(30).toString()
+
+        when:
+        def json = """
+        {
+            "dueDate": "${newDueDate}"
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/tasks/${taskId}")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == taskId
+        body.name == DEFAULT_TASK_NAME
+        body.description == DEFAULT_TASK_DESCRIPTION
+        body.dueDate == newDueDate
+        body.completed == false
+        body.createdAt != null
+        body.updatedAt != null
+        body.createdAt != body.updatedAt
+    }
+
+    def "should update only completed value in task"() {
+        given:
+        def id = registerDefaultUser()
+        def token = getDefaultUserToken()
+        def taskId = storeTask(token)
+
+        def newDueDate = LocalDate.now().plusDays(30).toString()
+
+        when:
+        def json = """
+        {
+            "completed": true
+        }
+        """
+        def request = MockMvcRequestBuilders.put("/api/tasks/${taskId}")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        def response = mvc.perform(request).andReturn().response
+
+        then:
+        response != null
+        response.status == HttpStatus.OK.value()
+
+        def body = parseBody(response)
+        body.id == taskId
+        body.name == DEFAULT_TASK_NAME
+        body.description == DEFAULT_TASK_DESCRIPTION
+        body.dueDate == DEFAULT_TASK_DUE_DATE
+        body.completed == true
+        body.createdAt != null
+        body.updatedAt != null
+        body.createdAt != body.updatedAt
+    }
+
     def "should return error on task update because task with given ID does not exists for this user"() {
         given:
         def id = registerDefaultUser()
@@ -265,7 +370,6 @@ class TaskControllerTestIT extends IntegrationTest {
 
         where:
         taskName                      | taskDescription            | dueDate
-        null                          | "Valid Description"        | LocalDate.now().plusDays(1).toString()
         "\"\""                        | "Valid Description"        | LocalDate.now().plusDays(1).toString()
         "\"A\""                       | "Valid Description"        | LocalDate.now().plusDays(1).toString()
         "\"${STRING_65_CHARACTERS}\"" | "Valid Description"        | LocalDate.now().plusDays(1).toString()
