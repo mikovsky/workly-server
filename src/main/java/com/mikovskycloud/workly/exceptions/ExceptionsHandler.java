@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,19 @@ public class ExceptionsHandler {
                 .status(e.getHttpStatus())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(e.toErrorResponse(requestUUID));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e, WebRequest r) {
+        UUID requestUUID = UUID.randomUUID();
+        log.error("RequestID: {}, Error Message: {}", requestUUID, e.getMessage());
+        return ErrorResponse.builder()
+                .errorCode(ErrorCode.BAD_REQUEST)
+                .errorMessage(ErrorCode.BAD_REQUEST.getMessage())
+                .requestUUID(requestUUID)
+                .details("request body is invalid. please check swagger")
+                .build();
     }
 
     @ExceptionHandler(InternalAuthenticationServiceException.class)
@@ -65,7 +79,7 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRuntimeException(RuntimeException e, WebRequest webRequest) {
         UUID requestUUID = UUID.randomUUID();
-        log.error("RequestID: {}, Error Message: {}", requestUUID, e.getMessage());
+        log.error("RequestID: {}, Error Message: {}, Error: {}", requestUUID, e.getMessage(), e);
         return ErrorResponse.builder()
                 .errorCode(ErrorCode.INTERNAL_SERVER_ERROR)
                 .errorMessage(ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
