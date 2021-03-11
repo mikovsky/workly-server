@@ -51,7 +51,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponse saveProjectForUser(CreateProjectRequest request, User user) {
-        Project project = Project.of(user.getId(), request.getName());
+        Project project = Project.of(user.getId(), request.getName(), request.getColor());
         Project savedProject = save(project);
         ProjectMember projectMember = ProjectMember.of(savedProject.getId(), user.getId());
         projectMemberRepository.save(projectMember);
@@ -66,6 +66,7 @@ public class ProjectService {
         authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
         if (request.getName() != null) project.setName(request.getName());
+        if (request.getColor() != null) project.setColor(request.getColor());
         Project updatedProject = update(project);
         return ProjectResponse.fromProject(updatedProject);
     }

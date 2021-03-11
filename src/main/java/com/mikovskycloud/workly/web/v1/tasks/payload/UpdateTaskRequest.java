@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class UpdateTaskRequest {
 
     @Size(min = 2, max = 64, message = "task name needs to have 2-64 characters")
-    @ApiModelProperty(required = true, position = 1)
+    @ApiModelProperty(required = false, position = 1)
     String name;
 
     @Size(max = 255, message = "max description length is 255 characters")

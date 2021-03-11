@@ -27,9 +27,12 @@ public class ProjectResponse {
     Long ownerId;
 
     @ApiModelProperty(required = true, position = 4)
-    Instant createdAt;
+    String color;
 
     @ApiModelProperty(required = true, position = 5)
+    Instant createdAt;
+
+    @ApiModelProperty(required = true, position = 6)
     Instant updatedAt;
 
     public static ProjectResponse fromProject(Project project) {
@@ -37,6 +40,7 @@ public class ProjectResponse {
                 .id(project.getId())
                 .name(project.getName())
                 .ownerId(project.getUserId())
+                .color(project.getColor())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();

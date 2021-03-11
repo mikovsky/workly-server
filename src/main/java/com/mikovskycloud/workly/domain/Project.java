@@ -31,16 +31,20 @@ public class Project {
     @Column(name = "name")
     String name;
 
+    @Column(name = "color")
+    String color;
+
     @Column(name = "created_at")
     Instant createdAt;
 
     @Column(name = "updated_at")
     Instant updatedAt;
 
-    public static Project of(Long userId, String name) {
+    public static Project of(Long userId, String name, String color) {
         return Project.builder()
                 .userId(userId)
                 .name(name)
+                .color(color)
                 .build();
     }
 
