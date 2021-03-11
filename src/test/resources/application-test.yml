@@ -1,8 +1,8 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/workly_db?sslmode=disable
-    username: workly_user
+    url: jdbc:postgresql://localhost:5432/workly_db_test?sslmode=disable
+    username: workly
     password: workly_pass
 
 workly:

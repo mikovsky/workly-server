@@ -173,10 +173,10 @@ class IntegrationTest extends Specification {
 
     protected void addMemberToProject(String token,
                                       Long projectId,
-                                      Long userId) {
+                                      String email) {
         def json = """
         {
-            "userId": ${userId}
+            "email": "${email}"
         }
         """
 
