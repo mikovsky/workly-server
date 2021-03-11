@@ -12,7 +12,7 @@ import lombok.Value;
 @Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@ApiModel(value = "ProjectResponse")
+@ApiModel(value = "ProjectMemberResponse")
 public class ProjectMemberResponse {
 
     @ApiModelProperty(required = true, position = 1)
