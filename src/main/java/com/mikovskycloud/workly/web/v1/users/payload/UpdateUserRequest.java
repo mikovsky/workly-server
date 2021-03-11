@@ -19,19 +19,19 @@ public class UpdateUserRequest {
 
     @Email(message = "email needs to be valid")
     @Size(min = 6, max = 64, message = "email needs to have 6-64 characters")
-    @ApiModelProperty(required = true, position = 1)
+    @ApiModelProperty(required = false, position = 1)
     String email;
 
     @Size(min = 2, max = 64, message = "firstName needs to have 2-64 characters")
-    @ApiModelProperty(required = true, position = 2)
+    @ApiModelProperty(required = false, position = 2)
     String firstName;
 
     @Size(min = 2, max = 64, message = "lastName needs to have 2-64 characters")
-    @ApiModelProperty(required = true, position = 3)
+    @ApiModelProperty(required = false, position = 3)
     String lastName;
 
     @Size(max = 64, message = "max jobTitle length is 64 characters")
-    @ApiModelProperty(required = true, position = 4)
+    @ApiModelProperty(required = false, position = 4)
     String jobTitle;
 
     public boolean isEmpty() {

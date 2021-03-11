@@ -14,11 +14,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         given:
         def defaultId = registerDefaultUser()
         def defaultToken = getDefaultUserToken()
-        def defaultProjectId = storeProject(defaultToken, "Default Project")
+        def defaultProjectId = storeProject(defaultToken)
 
         def anotherId = registerAnotherUser()
         def anotherToken = getAnotherUserToken()
-        def anotherProjectId = storeProject(anotherToken, "Another Project")
+        def anotherProjectId = storeProject(anotherToken, "Another Project", "#213769")
 
         when:
         def request = MockMvcRequestBuilders.get("/api/projects")
@@ -32,8 +32,9 @@ class ProjectControllerTestIT extends IntegrationTest {
         def body = parseBody(response)
         body.size() == 1
         body[0].id == defaultProjectId
-        body[0].name == "Default Project"
+        body[0].name == DEFAULT_PROJECT_NAME
         body[0].ownerId == defaultId
+        body[0].color == DEFAULT_PROJECT_COLOR
         body[0].createdAt != null
         body[0].updatedAt != null
         body[0].createdAt == body[0].updatedAt
@@ -44,11 +45,13 @@ class ProjectControllerTestIT extends IntegrationTest {
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
         def projectName = "My Project Test"
+        def projectColor = "#52060F"
 
         when:
         def json = """
         {
-            "name": "${projectName}"
+            "name": "${projectName}",
+            "color": "${projectColor}"
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects")
@@ -65,6 +68,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         body.id != null
         body.name == projectName
         body.ownerId == id
+        body.color == projectColor
         body.createdAt != null
         body.updatedAt != null
         body.createdAt == body.updatedAt
@@ -79,7 +83,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         expect:
         def json = """
         {
-            "name": ${projectName}
+            "name": ${projectName},
+            "color": ${color}
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects")
@@ -88,14 +93,19 @@ class ProjectControllerTestIT extends IntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         def response = mvc.perform(request).andReturn().response
         response != null
-        response.status == responseStatus
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        projectName                   | responseStatus
-        null                          | HttpStatus.BAD_REQUEST.value()
-        "\"\""                        | HttpStatus.BAD_REQUEST.value()
-        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
-        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
+        projectName                   | color
+        null                          | "\"${DEFAULT_PROJECT_COLOR}\""
+        "\"\""                        | "\"${DEFAULT_PROJECT_COLOR}\""
+        "\"A\""                       | "\"${DEFAULT_PROJECT_COLOR}\""
+        "\"${STRING_65_CHARACTERS}\"" | "\"${DEFAULT_PROJECT_COLOR}\""
+        "\"${DEFAULT_PROJECT_NAME}\"" | null
+        "\"${DEFAULT_PROJECT_NAME}\"" | "\"\""
+        "\"${DEFAULT_PROJECT_NAME}\"" | "\"#AA\""
+        "\"${DEFAULT_PROJECT_NAME}\"" | "\"#AAAA\""
+        "\"${DEFAULT_PROJECT_NAME}\"" | "\"#AAAAAAA\""
     }
 
     def "should update project for user"() {
@@ -105,11 +115,13 @@ class ProjectControllerTestIT extends IntegrationTest {
         def projectId = storeProject(token)
 
         def newProjectName = "My Updated Project"
+        def newProjectColor = "#FF00FF"
 
         when:
         def json = """
         {
-            "name": "${newProjectName}"
+            "name": "${newProjectName}",
+            "color": "${newProjectColor}"
         }
         """
         def request = MockMvcRequestBuilders.put("/api/projects/${projectId}")
@@ -126,6 +138,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         body.id == projectId
         body.name == newProjectName
         body.ownerId == id
+        body.color == newProjectColor
         body.createdAt != null
         body.updatedAt != null
         body.createdAt != body.updatedAt
@@ -139,7 +152,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "name": "Some new updated project name"
+            "name": "Some new updated project name",
+            "color": "#111111"
         }
         """
         def request = MockMvcRequestBuilders.put("/api/projects/123123123123")
@@ -170,7 +184,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "name": "Some new updated project name"
+            "name": "Some new updated project name",
+            "color": "#111111"
         }
         """
         def request = MockMvcRequestBuilders.put("/api/projects/${anotherProjectId}")
@@ -198,7 +213,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         expect:
         def json = """
         {
-            "name": ${projectName}
+            "name": ${projectName},
+            "color": ${color}
         }
         """
         def request = MockMvcRequestBuilders.put("/api/projects/${projectId}")
@@ -207,14 +223,20 @@ class ProjectControllerTestIT extends IntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         def response = mvc.perform(request).andReturn().response
         response != null
-        response.status == responseStatus
+        response.status == HttpStatus.BAD_REQUEST.value()
 
         where:
-        projectName                   | responseStatus
-        null                          | HttpStatus.BAD_REQUEST.value()
-        "\"\""                        | HttpStatus.BAD_REQUEST.value()
-        "\"A\""                       | HttpStatus.BAD_REQUEST.value()
-        "\"${STRING_65_CHARACTERS}\"" | HttpStatus.BAD_REQUEST.value()
+        projectName                   | color
+        null                          | null
+        "\"\""                        | null
+        "\"A\""                       | null
+        "\"${STRING_65_CHARACTERS}\"" | null
+        null                          | "\"\""
+        null                          | "\"#A\""
+        null                          | "\"#AA\""
+        null                          | "\"#AAAA\""
+        null                          | "\"#AAAAA\""
+        null                          | "\"#AAAAAAA\""
     }
 
     def "should delete project for user"() {

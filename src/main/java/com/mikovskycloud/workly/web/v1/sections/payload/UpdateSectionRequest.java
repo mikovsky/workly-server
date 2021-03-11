@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class UpdateSectionRequest {
 
     @Size(min = 2, max = 32, message = "section name needs to have 2-32 characters")
-    @ApiModelProperty(required = true, position = 1)
+    @ApiModelProperty(required = false, position = 1)
     String name;
 
     public boolean isEmpty() {

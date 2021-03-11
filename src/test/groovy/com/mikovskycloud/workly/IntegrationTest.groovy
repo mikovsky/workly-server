@@ -37,6 +37,7 @@ class IntegrationTest extends Specification {
     static final String DEFAULT_TASK_DUE_DATE = LocalDate.now().toString()
 
     static final String DEFAULT_PROJECT_NAME = "Default Project"
+    static final String DEFAULT_PROJECT_COLOR = "#696969"
 
     static final String DEFAULT_SECTION_NAME = "Default Section"
 
@@ -152,10 +153,12 @@ class IntegrationTest extends Specification {
     }
 
     protected long storeProject(String token,
-                                String name = DEFAULT_PROJECT_NAME) {
+                                String name = DEFAULT_PROJECT_NAME,
+                                String color = DEFAULT_PROJECT_COLOR) {
         def json = """
         {
-            "name": "${name}"
+            "name": "${name}",
+            "color": "${color}"
         }
         """
 
