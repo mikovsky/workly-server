@@ -100,7 +100,7 @@ public class ProjectService {
         Project project = findById(projectId);
         authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
-        User member = userRepository.findById(request.getUserId()).orElseThrow(WorklyException::userNotFound);
+        User member = userRepository.findByEmail(request.getEmail()).orElseThrow(WorklyException::userNotFound);
         projectMemberRepository.save(ProjectMember.of(project.getId(), member.getId()));
         return ProjectMemberResponse.fromUser(member);
     }

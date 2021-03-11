@@ -8,8 +8,8 @@ jobs:
       postgres:
         image: postgres:13-alpine
         env:
-          POSTGRES_DB: workly_db
-          POSTGRES_USER: workly_user
+          POSTGRES_DB: workly_db_test
+          POSTGRES_USER: workly
           POSTGRES_PASSWORD: workly_pass
         ports:
           - 5432:5432

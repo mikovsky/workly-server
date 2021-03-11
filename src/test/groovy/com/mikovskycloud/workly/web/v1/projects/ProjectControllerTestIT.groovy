@@ -286,8 +286,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         def defaultToken = getDefaultUserToken()
         def defaultProjectId = storeProject(defaultToken)
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
-        addMemberToProject(defaultToken, defaultProjectId, userId2)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
+        addMemberToProject(defaultToken, defaultProjectId, "user2@email.com")
 
         when:
         def request = MockMvcRequestBuilders.get("/api/projects/${defaultProjectId}/members")
@@ -345,8 +345,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         def defaultToken = getDefaultUserToken()
         def defaultProjectId = storeProject(defaultToken)
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
-        addMemberToProject(defaultToken, defaultProjectId, userId2)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
+        addMemberToProject(defaultToken, defaultProjectId, "user2@email.com")
 
         def anotherId = registerAnotherUser()
         def anotherToken = getAnotherUserToken()
@@ -376,7 +376,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "userId": ${anotherId}
+            "email": "${ANOTHER_EMAIL}"
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects/${defaultProjectId}/members")
@@ -406,7 +406,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "userId": ${anotherId}
+            "email": "${ANOTHER_EMAIL}"
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects/123123123123/members")
@@ -436,7 +436,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "userId": ${anotherId}
+            "email": "${ANOTHER_EMAIL}"
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects/${defaultProjectId}/members")
@@ -463,7 +463,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         when:
         def json = """
         {
-            "userId": 123123123123
+            "email": "somenotexistinguser@email.com"
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects/${defaultProjectId}/members")
@@ -491,7 +491,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         expect:
         def json = """
         {
-            "userId": ${newMemberId}
+            "email": ${email}
         }
         """
         def request = MockMvcRequestBuilders.post("/api/projects/${defaultProjectId}/members")
@@ -503,10 +503,11 @@ class ProjectControllerTestIT extends IntegrationTest {
         response.status == responseStatus
 
         where:
-        newMemberId | responseStatus
-        null        | HttpStatus.BAD_REQUEST.value()
-        0           | HttpStatus.BAD_REQUEST.value()
-        -1          | HttpStatus.BAD_REQUEST.value()
+        email                                   | responseStatus
+        null                                    | HttpStatus.BAD_REQUEST.value()
+        "\"notvalidemail\""                     | HttpStatus.BAD_REQUEST.value()
+        "\"a@b.c\""                             | HttpStatus.BAD_REQUEST.value()
+        "\"${STRING_65_CHARACTERS}@email.com\"" | HttpStatus.BAD_REQUEST.value()
     }
 
     def "should delete member from the project"() {
@@ -518,8 +519,8 @@ class ProjectControllerTestIT extends IntegrationTest {
         def defaultToken = getDefaultUserToken()
         def defaultProjectId = storeProject(defaultToken)
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
-        addMemberToProject(defaultToken, defaultProjectId, userId2)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
+        addMemberToProject(defaultToken, defaultProjectId, "user2@email.com")
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/projects/${defaultProjectId}/members/${userId2}")
@@ -586,9 +587,9 @@ class ProjectControllerTestIT extends IntegrationTest {
         def anotherId = registerAnotherUser()
         def anotherToken = getAnotherUserToken()
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
-        addMemberToProject(defaultToken, defaultProjectId, userId2)
-        addMemberToProject(defaultToken, defaultProjectId, anotherId)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
+        addMemberToProject(defaultToken, defaultProjectId, "user2@email.com")
+        addMemberToProject(defaultToken, defaultProjectId, ANOTHER_EMAIL)
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/projects/${defaultProjectId}/members/${userId1}")
@@ -612,7 +613,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         def defaultToken = getDefaultUserToken()
         def defaultProjectId = storeProject(defaultToken)
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/projects/${defaultProjectId}/members/123123123123")
@@ -637,7 +638,7 @@ class ProjectControllerTestIT extends IntegrationTest {
         def defaultToken = getDefaultUserToken()
         def defaultProjectId = storeProject(defaultToken)
 
-        addMemberToProject(defaultToken, defaultProjectId, userId1)
+        addMemberToProject(defaultToken, defaultProjectId, "user1@email.com")
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/projects/${defaultProjectId}/members/${userId2}")
