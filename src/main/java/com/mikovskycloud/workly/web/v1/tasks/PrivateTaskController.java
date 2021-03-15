@@ -31,8 +31,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-@Api(tags = "Tasks")
-public class TaskController {
+@Api(tags = "Private Tasks")
+public class PrivateTaskController {
 
     private final TaskService taskService;
 

@@ -29,6 +29,15 @@ public class Task {
     @Column(name = "user_id")
     Long userId;
 
+    @Column(name = "project_id")
+    Long projectId;
+
+    @Column(name = "section_id")
+    Long sectionId;
+
+    @Column(name = "assignee_id")
+    Long assigneeId;
+
     @Column(name = "name")
     String name;
 

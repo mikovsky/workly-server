@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
-class TaskControllerTestIT extends IntegrationTest {
+class PrivateTaskControllerTestIT extends IntegrationTest {
 
     def "should get all private Tasks for user"() {
         given:

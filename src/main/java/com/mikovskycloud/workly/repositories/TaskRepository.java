@@ -12,9 +12,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findAllByUserId(Long userId);
 
-    Optional<Task> findByIdAndUserId(Long taskId, Long userId);
+    List<Task> findAllByProjectId(Long projectId);
 
-    Boolean existsByNameAndUserId(String name, Long userId);
+    Optional<Task> findByIdAndUserId(Long taskId, Long userId);
 
     Boolean existsByIdAndUserId(Long taskId, Long userId);
 
