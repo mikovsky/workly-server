@@ -7,7 +7,9 @@ import com.mikovskycloud.workly.web.v1.tasks.payload.CreateProjectTaskRequest;
 import com.mikovskycloud.workly.web.v1.tasks.payload.ProjectTaskResponse;
 import com.mikovskycloud.workly.web.v1.tasks.payload.UpdateProjectTaskRequest;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,11 +36,13 @@ public class ProjectTasksController {
     private final RequestValidator requestValidator;
 
     @GetMapping
+    @ApiOperation(value = "Get all Tasks from the Project", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProjectTaskResponse> getTasksFromProject(@PathVariable Long projectId, Principal principal) {
         return projectTaskService.findTasksWithProjectId(projectId, User.fromPrincipal(principal));
     }
 
     @PostMapping
+    @ApiOperation(value = "Add new Task to the Project", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ProjectTaskResponse addTaskToProject(@Valid @RequestBody CreateProjectTaskRequest request,
                                                 @PathVariable Long projectId,
                                                 BindingResult bindingResult,
@@ -48,6 +52,7 @@ public class ProjectTasksController {
     }
 
     @PutMapping("/{taskId}")
+    @ApiOperation(value = "Update Task from the Project", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ProjectTaskResponse updateTaskFromProject(@Valid @RequestBody UpdateProjectTaskRequest request,
                                                      @PathVariable Long projectId,
                                                      @PathVariable Long taskId,
@@ -58,6 +63,7 @@ public class ProjectTasksController {
     }
 
     @DeleteMapping("/{taskId}")
+    @ApiOperation(value = "Delete Task from the Project")
     public ResponseEntity<Void> deleteTaskFromProject(@PathVariable Long projectId,
                                                       @PathVariable Long taskId,
                                                       Principal principal) {
