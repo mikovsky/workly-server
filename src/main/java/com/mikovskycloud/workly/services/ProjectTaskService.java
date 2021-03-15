@@ -1,12 +1,15 @@
 package com.mikovskycloud.workly.services;
 
+import com.mikovskycloud.workly.domain.Section;
 import com.mikovskycloud.workly.domain.Task;
 import com.mikovskycloud.workly.domain.User;
 import com.mikovskycloud.workly.exceptions.WorklyException;
 import com.mikovskycloud.workly.repositories.ProjectRepository;
+import com.mikovskycloud.workly.repositories.SectionRepository;
 import com.mikovskycloud.workly.repositories.TaskRepository;
+import com.mikovskycloud.workly.repositories.UserRepository;
 import com.mikovskycloud.workly.web.v1.tasks.payload.CreateProjectTaskRequest;
-import com.mikovskycloud.workly.web.v1.tasks.payload.TaskResponse;
+import com.mikovskycloud.workly.web.v1.tasks.payload.ProjectTaskResponse;
 import com.mikovskycloud.workly.web.v1.tasks.payload.UpdateProjectTaskRequest;
 import lombok.RequiredArgsConstructor;
 import one.util.streamex.StreamEx;
@@ -27,25 +30,36 @@ public class ProjectTaskService {
 
     private final TaskRepository taskRepository;
 
-    public List<TaskResponse> findTasksWithProjectId(Long projectId, User user) {
+    private final UserRepository userRepository;
+
+    private final SectionRepository sectionRepository;
+
+    public List<ProjectTaskResponse> findTasksWithProjectId(Long projectId, User user) {
         authorize(projectId, user.getId());
 
         List<Task> tasks = taskRepository.findAllByProjectId(projectId);
         return StreamEx.of(tasks)
-                .map(TaskResponse::fromTask)
+                .map(ProjectTaskResponse::fromTask)
                 .toList();
     }
 
-    public TaskResponse saveTask(CreateProjectTaskRequest request, Long projectId, User user) {
+    public ProjectTaskResponse saveTask(CreateProjectTaskRequest request, Long projectId, User user) {
         authorize(projectId, user.getId());
+        validate(projectId, request.getAssigneeId(), request.getSectionId());
 
-        Task savedTask = save(request.toTask());
-        return TaskResponse.fromTask(savedTask);
+        Task task = request.toTask();
+        task.setUserId(user.getId());
+        task.setProjectId(projectId);
+
+        Task savedTask = save(task);
+        return ProjectTaskResponse.fromTask(savedTask);
     }
 
-    public TaskResponse updateTask(UpdateProjectTaskRequest request, Long projectId, Long taskId, User user) {
-        authorize(projectId, user.getId());
+    public ProjectTaskResponse updateTask(UpdateProjectTaskRequest request, Long projectId, Long taskId, User user) {
         if (request.isEmpty()) throw WorklyException.emptyRequest();
+
+        authorize(projectId, user.getId());
+        validate(projectId, request.getAssigneeId(), request.getSectionId());
 
         Task task = findTaskById(taskId);
         if (request.getName() != null) task.setName(request.getName());
@@ -56,7 +70,7 @@ public class ProjectTaskService {
         if (request.getAssigneeId() != null) task.setAssigneeId(request.getAssigneeId());
 
         Task updatedTask = update(task);
-        return TaskResponse.fromTask(updatedTask);
+        return ProjectTaskResponse.fromTask(updatedTask);
     }
 
     public ResponseEntity<Void> deleteTask(Long projectId, Long taskId, User user) {
@@ -88,6 +102,18 @@ public class ProjectTaskService {
         }
 
         authorizeService.throwIfNotProjectMember(projectId, userId);
+    }
+
+    private void validate(Long projectId, Long assigneeId, Long sectionId) {
+        if (assigneeId != null) {
+            User assignee = userRepository.findById(assigneeId).orElseThrow(WorklyException::userNotFound);
+            authorizeService.throwIfNotProjectMember(projectId, assignee.getId());
+        }
+
+        if (sectionId != null) {
+            Section section = sectionRepository.findById(sectionId).orElseThrow(WorklyException::sectionNotFound);
+            if (!section.getProjectId().equals(projectId)) throw WorklyException.forbidden();
+        }
     }
 
     private Task findTaskById(Long taskId) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService {
+public class PrivateTaskService {
 
     private final TaskRepository taskRepository;
 

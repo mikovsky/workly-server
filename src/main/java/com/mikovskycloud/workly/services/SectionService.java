@@ -55,6 +55,7 @@ public class SectionService {
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         Section section = findById(sectionId);
+        if (!section.getProjectId().equals(projectId)) throw WorklyException.forbidden();
         if (request.getName() != null) section.setName(request.getName());
         Section updatedSection = update(section);
 
@@ -66,6 +67,7 @@ public class SectionService {
         authorizeService.throwIfNotProjectMember(project.getId(), user.getId());
 
         Section section = findById(sectionId);
+        if (!section.getProjectId().equals(projectId)) throw WorklyException.forbidden();
         sectionRepository.deleteById(section.getId());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

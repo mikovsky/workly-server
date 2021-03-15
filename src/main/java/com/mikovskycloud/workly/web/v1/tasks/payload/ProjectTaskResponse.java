@@ -15,8 +15,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@ApiModel(value = "TaskResponse")
-public class TaskResponse {
+@ApiModel(value = "ProjectTaskResponse")
+public class ProjectTaskResponse {
 
     @ApiModelProperty(required = true, position = 1)
     Long id;
@@ -34,18 +34,30 @@ public class TaskResponse {
     LocalDate dueDate;
 
     @ApiModelProperty(required = true, position = 6)
+    Long projectId;
+
+    @ApiModelProperty(required = false, position = 7)
+    Long sectionId;
+
+    @ApiModelProperty(required = false, position = 8)
+    Long assigneeId;
+
+    @ApiModelProperty(required = true, position = 9)
     Instant createdAt;
 
-    @ApiModelProperty(required = true, position = 7)
+    @ApiModelProperty(required = true, position = 10)
     Instant updatedAt;
 
-    public static TaskResponse fromTask(Task task) {
-        return TaskResponse.builder()
+    public static ProjectTaskResponse fromTask(Task task) {
+        return ProjectTaskResponse.builder()
                 .id(task.getId())
                 .name(task.getName())
                 .description(task.getDescription())
                 .completed(task.getCompleted())
                 .dueDate(task.getDueDate())
+                .projectId(task.getProjectId())
+                .sectionId(task.getSectionId())
+                .assigneeId(task.getAssigneeId())
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
                 .build();

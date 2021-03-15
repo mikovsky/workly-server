@@ -37,11 +37,6 @@ public class CreateProjectTaskRequest {
     @ApiModelProperty(required = false, position = 4)
     LocalDate dueDate;
 
-    @NotNull(message = "projectId cannot be null")
-    @Positive(message = "sectionId must be a positive number")
-    @ApiModelProperty(required = true, position = 5)
-    Long projectId;
-
     @Positive(message = "sectionId must be a positive number")
     @ApiModelProperty(required = false, position = 6)
     Long sectionId;
@@ -53,10 +48,9 @@ public class CreateProjectTaskRequest {
     public Task toTask() {
         return Task.builder()
                 .name(name)
-                .description(description)
-                .completed(completed)
+                .description(description != null ? description : "")
+                .completed(completed != null ? completed : false)
                 .dueDate(dueDate)
-                .projectId(projectId)
                 .sectionId(sectionId)
                 .assigneeId(assigneeId)
                 .build();

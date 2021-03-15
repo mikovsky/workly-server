@@ -15,11 +15,11 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def defaultId = registerDefaultUser()
         def defaultToken = getDefaultUserToken()
-        def defaultTaskId1 = storeTask(defaultToken, "Task 1")
+        def defaultTaskId1 = storePrivateTask(defaultToken, "Task 1")
 
         def anotherId = registerAnotherUser()
         def anotherToken = getAnotherUserToken()
-        def anotherTaskId1 = storeTask(anotherToken, "Task 2")
+        def anotherTaskId1 = storePrivateTask(anotherToken, "Task 2")
 
         when:
         def request = MockMvcRequestBuilders.get("/api/tasks")
@@ -116,7 +116,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         def newTaskName = "My Updated Task 1"
         def newTaskDescription = "My Updated Task Description 1"
@@ -156,7 +156,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         def newTaskDescription = "My Updated Task Description 1"
 
@@ -191,7 +191,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         def newDueDate = LocalDate.now().plusDays(30).toString()
 
@@ -226,7 +226,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         def newDueDate = LocalDate.now().plusDays(30).toString()
 
@@ -291,7 +291,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         expect:
         def json = """
@@ -323,7 +323,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/tasks/${taskId}")
@@ -340,7 +340,7 @@ class PrivateTaskControllerTestIT extends IntegrationTest {
         given:
         def id = registerDefaultUser()
         def token = getDefaultUserToken()
-        def taskId = storeTask(token)
+        def taskId = storePrivateTask(token)
 
         when:
         def request = MockMvcRequestBuilders.delete("/api/tasks/123123123123")

@@ -7,6 +7,7 @@ import com.mikovskycloud.workly.exceptions.WorklyException;
 import com.mikovskycloud.workly.repositories.ProjectMemberRepository;
 import com.mikovskycloud.workly.repositories.ProjectRepository;
 import com.mikovskycloud.workly.repositories.SectionRepository;
+import com.mikovskycloud.workly.repositories.TaskRepository;
 import com.mikovskycloud.workly.repositories.UserRepository;
 import com.mikovskycloud.workly.web.v1.projects.payload.AddMemberRequest;
 import com.mikovskycloud.workly.web.v1.projects.payload.CreateProjectRequest;
@@ -35,6 +36,8 @@ public class ProjectService {
     private final ProjectMemberRepository projectMemberRepository;
 
     private final SectionRepository sectionRepository;
+
+    private final TaskRepository taskRepository;
 
     private final AuthorizeService authorizeService;
 
@@ -76,6 +79,7 @@ public class ProjectService {
         Project project = findById(projectId);
         authorizeService.throwIfNotProjectOwner(project.getId(), user.getId());
 
+        taskRepository.deleteAllByProjectId(projectId);
         sectionRepository.deleteAllByProjectId(projectId);
         projectMemberRepository.deleteAllByProjectId(projectId);
         projectRepository.deleteById(projectId);

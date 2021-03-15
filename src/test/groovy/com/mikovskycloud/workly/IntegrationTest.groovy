@@ -128,10 +128,10 @@ class IntegrationTest extends Specification {
         return body.token
     }
 
-    protected long storeTask(String token,
-                             String name = DEFAULT_TASK_NAME,
-                             String description = DEFAULT_TASK_DESCRIPTION,
-                             String dueDate = DEFAULT_TASK_DUE_DATE) {
+    protected long storePrivateTask(String token,
+                                    String name = DEFAULT_TASK_NAME,
+                                    String description = DEFAULT_TASK_DESCRIPTION,
+                                    String dueDate = DEFAULT_TASK_DUE_DATE) {
         def json = """
         {
             "name": "${name}",
@@ -141,6 +141,63 @@ class IntegrationTest extends Specification {
         """
 
         def request = MockMvcRequestBuilders.post("/api/tasks")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        def response = mvc.perform(request).andReturn().response
+
+        def body = parseBody(response)
+
+        return body.id
+    }
+
+    protected long storeProjectTask(String token,
+                                    Long projectId,
+                                    Long assigneeId,
+                                    String name = DEFAULT_TASK_NAME,
+                                    String description = DEFAULT_TASK_DESCRIPTION,
+                                    String dueDate = DEFAULT_TASK_DUE_DATE) {
+        def json = """
+        {
+            "name": "${name}",
+            "description": "${description}",
+            "dueDate": "${dueDate}",
+            "sectionId": null,
+            "assigneeId": ${assigneeId}
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/projects/${projectId}/tasks")
+                .header("Authorization", token)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+
+        def response = mvc.perform(request).andReturn().response
+
+        def body = parseBody(response)
+
+        return body.id
+    }
+
+    protected long storeProjectTaskWithSection(String token,
+                                               Long projectId,
+                                               Long assigneeId,
+                                               Long sectionId,
+                                               String name = DEFAULT_TASK_NAME,
+                                               String description = DEFAULT_TASK_DESCRIPTION,
+                                               String dueDate = DEFAULT_TASK_DUE_DATE) {
+        def json = """
+        {
+            "name": "${name}",
+            "description": "${description}",
+            "dueDate": "${dueDate}",
+            "sectionId": ${sectionId},
+            "assigneeId": ${assigneeId}
+        }
+        """
+
+        def request = MockMvcRequestBuilders.post("/api/projects/${projectId}/tasks")
                 .header("Authorization", token)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
