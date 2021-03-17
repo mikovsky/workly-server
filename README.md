@@ -4,9 +4,9 @@ Workly is a project created by me and my frontend developer friend. It's a proje
 This is repo with backend code. Frontend repo is here: https://github.com/mtmotyka/workly-client
 
 ### Live preview
-You can see our progress here: https://workly.mikovsky-cloud.com
+You can see our progress here: https://workly.mikovskycloud.com
 
-Backend application is running on AWS as Docker container.
+Backend application is running on DigitalOcean Droplet as Docker container.
 
 ## Used technologies
 
@@ -24,4 +24,4 @@ Backend application is running on AWS as Docker container.
 - Flyway
 - Docker
 - JWT Auth
-- AWS
+- DigitalOcean (because Bezos is out of his mind with AWS Pricing :))
